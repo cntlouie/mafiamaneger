@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager, current_user, login_required
 from flask_migrate import Migrate
+from sqlalchemy.exc import SQLAlchemyError
 
 class Base(DeclarativeBase):
     pass
@@ -91,23 +92,40 @@ app.register_blueprint(admin.bp)
 
 @app.route('/promote_first_user_to_admin')
 def promote_first_user_to_admin():
-    first_user = User.query.first()
-    if first_user:
-        first_user.is_admin = True
-        db.session.commit()
-        return jsonify({'message': f'User {first_user.username} promoted to admin'}), 200
-    return jsonify({'message': 'No users found'}), 404
-
-def ensure_admin_exists():
-    admin_user = User.query.filter_by(is_admin=True).first()
-    if not admin_user:
+    try:
         first_user = User.query.first()
         if first_user:
             first_user.is_admin = True
             db.session.commit()
-            logger.info(f"Promoted user {first_user.username} to admin")
+            logger.info(f'User {first_user.username} promoted to admin')
+            return jsonify({'message': f'User {first_user.username} promoted to admin'}), 200
         else:
-            logger.warning("No users found in the database")
+            logger.warning('No users found in the database')
+            return jsonify({'message': 'No users found'}), 404
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logger.error(f'Database error while promoting user to admin: {str(e)}')
+        return jsonify({'error': 'Database error', 'message': str(e)}), 500
+    except Exception as e:
+        logger.error(f'Unexpected error while promoting user to admin: {str(e)}')
+        return jsonify({'error': 'Unexpected error', 'message': str(e)}), 500
+
+def ensure_admin_exists():
+    try:
+        admin_user = User.query.filter_by(is_admin=True).first()
+        if not admin_user:
+            first_user = User.query.first()
+            if first_user:
+                first_user.is_admin = True
+                db.session.commit()
+                logger.info(f"Promoted user {first_user.username} to admin")
+            else:
+                logger.warning("No users found in the database")
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logger.error(f'Database error while ensuring admin exists: {str(e)}')
+    except Exception as e:
+        logger.error(f'Unexpected error while ensuring admin exists: {str(e)}')
 
 def setup_database():
     with app.app_context():
