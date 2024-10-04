@@ -4,38 +4,67 @@
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">User Management</h1>
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <table class="w-full">
-            <thead>
-                <tr>
-                    <th class="px-4 py-2">Username</th>
-                    <th class="px-4 py-2">Email</th>
-                    <th class="px-4 py-2">Admin</th>
-                    <th class="px-4 py-2">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users.items %}
-                <tr>
-                    <td class="border px-4 py-2">{{ user.username }}</td>
-                    <td class="border px-4 py-2">{{ user.email }}</td>
-                    <td class="border px-4 py-2">
-                        <input type="checkbox" {% if user.is_admin %}checked{% endif %} onchange="toggleAdmin({{ user.id }}, this)" {% if user == current_user %}disabled{% endif %}>
-                    </td>
-                    <td class="border px-4 py-2">
-                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-blue mr-2">Edit</a>
-                        <button onclick="deleteUser({{ user.id }})" {% if user == current_user %}disabled{% endif %} class="btn btn-red">Delete</button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <div class="mt-4">
-            {% if users.has_prev %}
-                <a href="{{ url_for('admin.list_users', page=users.prev_num) }}" class="btn btn-blue">Previous</a>
-            {% endif %}
-            {% if users.has_next %}
-                <a href="{{ url_for('admin.list_users', page=users.next_num) }}" class="btn btn-blue">Next</a>
-            {% endif %}
+        <div class="mb-4 flex justify-between items-center">
+            <div>
+                <span class="font-bold">Total Users:</span> {{ total_users }}
+                <span class="font-bold ml-4">Total Admins:</span> {{ total_admins }}
+            </div>
+            <form action="{{ url_for('admin.list_users') }}" method="get" class="flex">
+                <input type="text" name="search" placeholder="Search users..." value="{{ search_query }}" class="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <button type="submit" class="btn btn-blue ml-2">Search</button>
+            </form>
+        </div>
+        <form id="bulk-action-form" method="post" action="{{ url_for('admin.bulk_action') }}">
+            <div class="mb-4">
+                <select name="action" class="shadow border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">Bulk Actions</option>
+                    <option value="delete">Delete Selected</option>
+                    <option value="toggle_admin">Toggle Admin Status</option>
+                </select>
+                <button type="submit" class="btn btn-blue ml-2">Apply</button>
+            </div>
+            <table class="w-full">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2"><input type="checkbox" id="select-all"></th>
+                        <th class="px-4 py-2">Username</th>
+                        <th class="px-4 py-2">Email</th>
+                        <th class="px-4 py-2">Admin</th>
+                        <th class="px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users.items %}
+                    <tr>
+                        <td class="border px-4 py-2">
+                            <input type="checkbox" name="user_ids[]" value="{{ user.id }}" {% if user == current_user %}disabled{% endif %}>
+                        </td>
+                        <td class="border px-4 py-2">{{ user.username }}</td>
+                        <td class="border px-4 py-2">{{ user.email }}</td>
+                        <td class="border px-4 py-2">
+                            <input type="checkbox" {% if user.is_admin %}checked{% endif %} onchange="toggleAdmin({{ user.id }}, this)" {% if user == current_user %}disabled{% endif %}>
+                        </td>
+                        <td class="border px-4 py-2">
+                            <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-blue mr-2">Edit</a>
+                            <button type="button" onclick="deleteUser({{ user.id }})" {% if user == current_user %}disabled{% endif %} class="btn btn-red">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+        <div class="mt-4 flex justify-between items-center">
+            <div>
+                Showing {{ users.items|length }} of {{ users.total }} users
+            </div>
+            <div>
+                {% if users.has_prev %}
+                    <a href="{{ url_for('admin.list_users', page=users.prev_num, search=search_query) }}" class="btn btn-blue">Previous</a>
+                {% endif %}
+                {% if users.has_next %}
+                    <a href="{{ url_for('admin.list_users', page=users.next_num, search=search_query) }}" class="btn btn-blue">Next</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
@@ -82,5 +111,26 @@ function deleteUser(userId) {
         });
     }
 }
+
+document.getElementById('select-all').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('input[name="user_ids[]"]');
+    checkboxes.forEach(checkbox => {
+        if (!checkbox.disabled) {
+            checkbox.checked = this.checked;
+        }
+    });
+});
+
+document.getElementById('bulk-action-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const action = this.elements['action'].value;
+    if (!action) {
+        alert('Please select an action');
+        return;
+    }
+    if (confirm(`Are you sure you want to ${action} the selected users?`)) {
+        this.submit();
+    }
+});
 </script>
 {% endblock %}
