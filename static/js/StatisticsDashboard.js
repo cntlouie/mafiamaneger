@@ -19,12 +19,15 @@ function ArrowDownIcon() {
 }
 
 function StatisticsDashboard() {
+  console.log('StatisticsDashboard component mounted'); // Debug log
   const [statistics, setStatistics] = useState([]);
 
   useEffect(() => {
+    console.log('Fetching stats data'); // Debug log
     fetch('/stats')
       .then(response => response.json())
       .then(data => {
+        console.log('Received stats data:', data); // Debug log
         const orderedStats = [
           'total_wins',
           'total_losses',
@@ -49,9 +52,10 @@ function StatisticsDashboard() {
           currentValue: data[name]?.current || 0,
           previousValue: data[name]?.previous || 0
         }));
+        console.log('Processed stats:', stats); // Debug log
         setStatistics(stats);
       })
-      .catch(error => console.error('Error:', error));
+      .catch(error => console.error('Error fetching stats:', error));
   }, []);
 
   return (
@@ -96,4 +100,5 @@ function StatisticsDashboard() {
   );
 }
 
+console.log('Rendering StatisticsDashboard component'); // Debug log
 ReactDOM.render(<StatisticsDashboard />, document.getElementById('react-stats-dashboard'));
