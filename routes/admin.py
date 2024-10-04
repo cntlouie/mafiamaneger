@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, abort
+from flask import Blueprint, render_template, request, jsonify, abort, current_app
 from flask_login import login_required, current_user
 from models import User, db, FeatureAccess
 from functools import wraps
@@ -11,9 +11,13 @@ logger = logging.getLogger(__name__)
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if not current_user.is_authenticated or not current_user.is_admin:
-            logger.warning(f"Unauthorized access attempt to admin area by user {current_user.id if current_user.is_authenticated else 'anonymous'}")
+        if not current_user.is_authenticated:
+            logger.warning(f"Unauthenticated access attempt to admin area")
+            return current_app.login_manager.unauthorized()
+        if not current_user.is_admin:
+            logger.warning(f"Non-admin access attempt to admin area by user {current_user.id}")
             abort(403)
+        logger.info(f"Admin access granted to user {current_user.id}")
         return f(*args, **kwargs)
     return decorated_function
 
