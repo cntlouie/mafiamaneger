@@ -26,10 +26,17 @@ function updateStats() {
     })
     .then(response => response.json())
     .then(data => {
-        alert(data.message);
-        getStats();
+        if (data.error) {
+            alert(`Error: ${data.error}\n${data.details || ''}`);
+        } else {
+            alert(data.message);
+            getStats();
+        }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An unexpected error occurred. Please try again.');
+    });
 }
 
 function getStats() {
@@ -38,11 +45,15 @@ function getStats() {
     .then(data => {
         if (data.error) {
             console.error(data.error);
+            alert(`Error: ${data.error}\n${data.details || ''}`);
         } else {
             updateStatsDisplay(data);
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An unexpected error occurred while fetching stats. Please try again.');
+    });
 }
 
 function updateStatsDisplay(stats) {
