@@ -49,8 +49,8 @@ function StatisticsDashboard() {
 
         const stats = orderedStats.map(name => ({
           name: name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-          currentValue: data[name]?.current || 0,
-          previousValue: data[name]?.previous || 0
+          currentValue: data[name] && data[name].current ? data[name].current : 0,
+          previousValue: data[name] && data[name].previous ? data[name].previous : 0
         }));
         console.log('Processed stats:', stats); // Debug log
         setStatistics(stats);
