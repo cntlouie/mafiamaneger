@@ -43,6 +43,11 @@ def get_stats():
         previous_stats = Stats.query.filter_by(user_id=current_user.id).order_by(Stats.timestamp.desc()).offset(1).first()
 
         if current_stats:
+            total_battles = current_stats.total_wins + current_stats.total_losses
+            win_rate = (current_stats.total_wins / total_battles * 100) if total_battles > 0 else 0
+            previous_total_battles = previous_stats.total_wins + previous_stats.total_losses if previous_stats else total_battles
+            previous_win_rate = (previous_stats.total_wins / previous_total_battles * 100) if previous_total_battles > 0 else win_rate
+
             stats_data = {
                 'total_wins': {'current': current_stats.total_wins, 'previous': previous_stats.total_wins if previous_stats else current_stats.total_wins},
                 'total_losses': {'current': current_stats.total_losses, 'previous': previous_stats.total_losses if previous_stats else current_stats.total_losses},
@@ -50,6 +55,7 @@ def get_stats():
                 'assaults_lost': {'current': current_stats.assaults_lost, 'previous': previous_stats.assaults_lost if previous_stats else current_stats.assaults_lost},
                 'defending_battles_won': {'current': current_stats.defending_battles_won, 'previous': previous_stats.defending_battles_won if previous_stats else current_stats.defending_battles_won},
                 'defending_battles_lost': {'current': current_stats.defending_battles_lost, 'previous': previous_stats.defending_battles_lost if previous_stats else current_stats.defending_battles_lost},
+                'win_rate': {'current': round(win_rate, 2), 'previous': round(previous_win_rate, 2)},
                 'kills': {'current': current_stats.kills, 'previous': previous_stats.kills if previous_stats else current_stats.kills},
                 'destroyed_traps': {'current': current_stats.destroyed_traps, 'previous': previous_stats.destroyed_traps if previous_stats else current_stats.destroyed_traps},
                 'lost_associates': {'current': current_stats.lost_associates, 'previous': previous_stats.lost_associates if previous_stats else current_stats.lost_associates},

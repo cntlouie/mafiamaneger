@@ -25,10 +25,29 @@ function StatisticsDashboard() {
     fetch('/stats')
       .then(response => response.json())
       .then(data => {
-        const stats = Object.entries(data).map(([name, values]) => ({
-          name,
-          currentValue: values.current,
-          previousValue: values.previous
+        const orderedStats = [
+          'total_wins',
+          'total_losses',
+          'assaults_won',
+          'assaults_lost',
+          'defending_battles_won',
+          'defending_battles_lost',
+          'win_rate',
+          'kills',
+          'destroyed_traps',
+          'lost_associates',
+          'lost_traps',
+          'healed_associates',
+          'wounded_enemy_associates',
+          'enemy_turfs_destroyed',
+          'turf_destroyed_times',
+          'eliminated_enemy_influence'
+        ];
+
+        const stats = orderedStats.map(name => ({
+          name: name.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          currentValue: data[name]?.current || 0,
+          previousValue: data[name]?.previous || 0
         }));
         setStatistics(stats);
       })
