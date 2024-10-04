@@ -1,10 +1,16 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from models import Faction, User, db
+from marshmallow import Schema, fields, ValidationError
 import random
 import string
 
 bp = Blueprint('factions', __name__)
+
+class FactionSchema(Schema):
+    name = fields.String(required=True, validate=lambda n: len(n) >= 3 and len(n) <= 64)
+
+faction_schema = FactionSchema()
 
 def generate_invitation_code():
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
@@ -12,29 +18,53 @@ def generate_invitation_code():
 @bp.route('/faction/create', methods=['POST'])
 @login_required
 def create_faction():
-    data = request.get_json()
-    faction_name = data.get('name')
-    if Faction.query.filter_by(name=faction_name).first():
-        return jsonify({'error': 'Faction name already exists'}), 400
-    
-    invitation_code = generate_invitation_code()
-    new_faction = Faction(name=faction_name, invitation_code=invitation_code, leader_id=current_user.id)
-    current_user.faction = new_faction
-    db.session.add(new_faction)
-    db.session.commit()
-    return jsonify({'message': 'Faction created successfully', 'invitation_code': invitation_code}), 201
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+
+        # Validate input data
+        try:
+            validated_data = faction_schema.load(data)
+        except ValidationError as err:
+            return jsonify({'error': 'Invalid input data', 'details': err.messages}), 400
+
+        faction_name = validated_data['name']
+        if Faction.query.filter_by(name=faction_name).first():
+            return jsonify({'error': 'Faction name already exists'}), 400
+        
+        invitation_code = generate_invitation_code()
+        new_faction = Faction(name=faction_name, invitation_code=invitation_code, leader_id=current_user.id)
+        current_user.faction = new_faction
+        db.session.add(new_faction)
+        db.session.commit()
+        return jsonify({'message': 'Faction created successfully', 'invitation_code': invitation_code}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500
 
 @bp.route('/faction/join', methods=['POST'])
 @login_required
 def join_faction():
-    data = request.get_json()
-    invitation_code = data.get('invitation_code')
-    faction = Faction.query.filter_by(invitation_code=invitation_code).first()
-    if not faction:
-        return jsonify({'error': 'Invalid invitation code'}), 400
-    current_user.faction = faction
-    db.session.commit()
-    return jsonify({'message': 'Joined faction successfully'}), 200
+    try:
+        data = request.get_json()
+        if not data or 'invitation_code' not in data:
+            return jsonify({'error': 'Invalid input data'}), 400
+
+        invitation_code = data['invitation_code']
+        faction = Faction.query.filter_by(invitation_code=invitation_code).first()
+        if not faction:
+            return jsonify({'error': 'Invalid invitation code'}), 400
+        
+        if current_user.faction:
+            return jsonify({'error': 'You are already in a faction'}), 400
+
+        current_user.faction = faction
+        db.session.commit()
+        return jsonify({'message': 'Joined faction successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': 'An unexpected error occurred', 'details': str(e)}), 500
 
 @bp.route('/faction/members', methods=['GET'])
 @login_required
@@ -42,4 +72,34 @@ def get_faction_members():
     if not current_user.faction:
         return jsonify({'error': 'You are not in a faction'}), 400
     members = User.query.filter_by(faction_id=current_user.faction.id).all()
-    return jsonify({'members': [member.username for member in members]}), 200
+    return jsonify({'members': [{'id': member.id, 'username': member.username} for member in members]}), 200
+
+@bp.route('/faction/details', methods=['GET'])
+@login_required
+def get_faction_details():
+    if not current_user.faction:
+        return jsonify({'error': 'You are not in a faction'}), 400
+    
+    faction = current_user.faction
+    leader = User.query.get(faction.leader_id)
+    
+    return jsonify({
+        'id': faction.id,
+        'name': faction.name,
+        'leader': {'id': leader.id, 'username': leader.username},
+        'member_count': len(faction.members),
+        'invitation_code': faction.invitation_code if current_user.id == faction.leader_id else None
+    }), 200
+
+@bp.route('/faction/leave', methods=['POST'])
+@login_required
+def leave_faction():
+    if not current_user.faction:
+        return jsonify({'error': 'You are not in a faction'}), 400
+    
+    if current_user.id == current_user.faction.leader_id:
+        return jsonify({'error': 'Faction leader cannot leave the faction'}), 400
+    
+    current_user.faction = None
+    db.session.commit()
+    return jsonify({'message': 'Left faction successfully'}), 200

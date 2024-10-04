@@ -2,8 +2,28 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from models import Stats, db
 from sqlalchemy.exc import SQLAlchemyError, DataError
+from marshmallow import Schema, fields, ValidationError
 
 bp = Blueprint('stats', __name__)
+
+class StatsSchema(Schema):
+    total_wins = fields.Integer(required=True, validate=lambda n: n >= 0)
+    total_losses = fields.Integer(required=True, validate=lambda n: n >= 0)
+    assaults_won = fields.Integer(required=True, validate=lambda n: n >= 0)
+    assaults_lost = fields.Integer(required=True, validate=lambda n: n >= 0)
+    defending_battles_won = fields.Integer(required=True, validate=lambda n: n >= 0)
+    defending_battles_lost = fields.Integer(required=True, validate=lambda n: n >= 0)
+    kills = fields.Integer(required=True, validate=lambda n: n >= 0)
+    destroyed_traps = fields.Integer(required=True, validate=lambda n: n >= 0)
+    lost_associates = fields.Integer(required=True, validate=lambda n: n >= 0)
+    lost_traps = fields.Integer(required=True, validate=lambda n: n >= 0)
+    healed_associates = fields.Integer(required=True, validate=lambda n: n >= 0)
+    wounded_enemy_associates = fields.Integer(required=True, validate=lambda n: n >= 0)
+    enemy_turfs_destroyed = fields.Integer(required=True, validate=lambda n: n >= 0)
+    turf_destroyed_times = fields.Integer(required=True, validate=lambda n: n >= 0)
+    eliminated_enemy_influence = fields.Integer(required=True, validate=lambda n: n >= 0)
+
+stats_schema = StatsSchema()
 
 @bp.route('/stats', methods=['POST'])
 @login_required
@@ -13,16 +33,13 @@ def update_stats():
         if not data:
             return jsonify({'error': 'No data provided'}), 400
 
-        # Validate and convert data to integers
-        for key, value in data.items():
-            try:
-                data[key] = int(value)
-                if data[key] < 0:
-                    return jsonify({'error': f'Invalid value for {key}. Must be a non-negative integer.'}), 400
-            except ValueError:
-                return jsonify({'error': f'Invalid value for {key}. Must be a valid integer.'}), 400
+        # Validate input data
+        try:
+            validated_data = stats_schema.load(data)
+        except ValidationError as err:
+            return jsonify({'error': 'Invalid input data', 'details': err.messages}), 400
 
-        new_stats = Stats(user_id=current_user.id, **data)
+        new_stats = Stats(user_id=current_user.id, **validated_data)
         db.session.add(new_stats)
         db.session.commit()
         return jsonify({'message': 'Stats updated successfully'}), 200

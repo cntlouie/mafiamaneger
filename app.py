@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template, redirect, url_for, request
+import logging
+from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager, current_user, login_required
@@ -10,11 +11,15 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 app = Flask(__name__)
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 database_url = os.environ.get("DATABASE_URL")
 if database_url:
-    print("DATABASE_URL is set")
+    logger.info("DATABASE_URL is set")
 else:
-    print("DATABASE_URL is not set")
+    logger.warning("DATABASE_URL is not set")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
@@ -37,24 +42,43 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    print(f"Received request for index page from {request.remote_addr}")
+    logger.info(f"Received request for index page from {request.remote_addr}")
     return render_template('index.html')
 
 @app.route('/register')
 def register():
-    print(f"Received request for register page from {request.remote_addr}")
+    logger.info(f"Received request for register page from {request.remote_addr}")
     return render_template('register.html')
 
 @app.route('/login')
 def login():
-    print(f"Received request for login page from {request.remote_addr}")
+    logger.info(f"Received request for login page from {request.remote_addr}")
     return render_template('login.html')
 
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    print(f"Received request for dashboard page from {request.remote_addr}")
+    logger.info(f"Received request for dashboard page from {request.remote_addr}")
     return render_template('dashboard.html')
+
+@app.route('/health')
+def health_check():
+    try:
+        # Check database connection
+        db.session.execute('SELECT 1')
+        return jsonify({'status': 'healthy', 'database': 'connected'}), 200
+    except Exception as e:
+        logger.error(f"Health check failed: {str(e)}")
+        return jsonify({'status': 'unhealthy', 'database': 'disconnected', 'error': str(e)}), 500
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
 
 # Import and register blueprints after all route definitions
 from routes import auth, stats, factions
