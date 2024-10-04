@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="bg-white p-6 rounded-xl shadow-md">
+        <h2 class="text-2xl font-bold mb-4">Your Stats</h2>
+        <div id="stats-display">
+            <!-- Stats will be populated here by JavaScript -->
+        </div>
+        <h3 class="text-xl font-bold mt-6 mb-2">Update Stats</h3>
+        <form id="stats-form">
+            <!-- Add input fields for all stats -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="total-wins" class="block text-gray-700 text-sm font-bold mb-2">Total Wins</label>
+                    <input type="number" id="total-wins" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="total-losses" class="block text-gray-700 text-sm font-bold mb-2">Total Losses</label>
+                    <input type="number" id="total-losses" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <!-- Add more input fields for other stats -->
+            </div>
+            <button type="button" onclick="updateStats()" class="btn btn-blue mt-4">Update Stats</button>
+        </form>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow-md">
+        <h2 class="text-2xl font-bold mb-4">Faction Management</h2>
+        <div id="faction-info">
+            <!-- Faction info will be populated here by JavaScript -->
+        </div>
+        <h3 class="text-xl font-bold mt-6 mb-2">Create Faction</h3>
+        <form id="create-faction-form">
+            <div class="mb-4">
+                <label for="faction-name" class="block text-gray-700 text-sm font-bold mb-2">Faction Name</label>
+                <input type="text" id="faction-name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <button type="button" onclick="createFaction()" class="btn btn-blue">Create Faction</button>
+        </form>
+        <h3 class="text-xl font-bold mt-6 mb-2">Join Faction</h3>
+        <form id="join-faction-form">
+            <div class="mb-4">
+                <label for="invitation-code" class="block text-gray-700 text-sm font-bold mb-2">Invitation Code</label>
+                <input type="text" id="invitation-code" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <button type="button" onclick="joinFaction()" class="btn btn-blue">Join Faction</button>
+        </form>
+        <h3 class="text-xl font-bold mt-6 mb-2">Faction Members</h3>
+        <ul id="faction-members" class="list-disc list-inside">
+            <!-- Faction members will be populated here by JavaScript -->
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/stats.js') }}"></script>
+<script src="{{ url_for('static', filename='js/factions.js') }}"></script>
+{% endblock %}
