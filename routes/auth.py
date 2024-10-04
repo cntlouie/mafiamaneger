@@ -35,13 +35,11 @@ def login():
     if user and user.check_password(data.get('password')):
         login_user(user)
         logger.info(f"User {user.username} logged in successfully. Admin status: {user.is_admin}")
-        next_page = request.args.get('next')
-        if next_page and next_page.startswith('/'):
-            return jsonify({'message': 'Logged in successfully', 'redirect': next_page, 'is_admin': user.is_admin}), 200
-        elif user.is_admin:
-            return jsonify({'message': 'Logged in successfully', 'redirect': url_for('admin.admin_dashboard'), 'is_admin': True}), 200
-        else:
-            return jsonify({'message': 'Logged in successfully', 'redirect': url_for('dashboard'), 'is_admin': False}), 200
+        return jsonify({
+            'message': 'Logged in successfully',
+            'redirect': url_for('admin.admin_dashboard') if user.is_admin else url_for('dashboard'),
+            'is_admin': user.is_admin
+        }), 200
     logger.warning(f"Failed login attempt for user: {data.get('username')}")
     return jsonify({'error': 'Invalid username or password'}), 401
 

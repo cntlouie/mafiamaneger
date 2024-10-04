@@ -78,39 +78,6 @@ def toggle_admin(user_id):
     logger.info(f"Admin status toggled for user {user_id} by admin {current_user.id}")
     return jsonify({'success': True, 'is_admin': user.is_admin})
 
-@bp.route('/admin/users/<int:user_id>/edit', methods=['GET', 'POST'])
-@login_required
-@admin_required
-def edit_user(user_id):
-    user = User.query.get_or_404(user_id)
-    if request.method == 'POST':
-        user.username = request.form['username']
-        user.email = request.form['email']
-        if request.form['password']:
-            user.set_password(request.form['password'])
-        try:
-            db.session.commit()
-            logger.info(f"User {user_id} updated by admin {current_user.id}")
-            return jsonify({'success': True, 'message': 'User updated successfully'})
-        except SQLAlchemyError as e:
-            db.session.rollback()
-            logger.error(f"Database error while updating user {user_id}: {str(e)}")
-            return jsonify({'error': 'Database error', 'message': str(e)}), 500
-    return render_template('admin/edit_user.html', user=user)
-
-@bp.route('/admin/users/<int:user_id>/delete', methods=['POST'])
-@login_required
-@admin_required
-def delete_user(user_id):
-    user = User.query.get_or_404(user_id)
-    if user == current_user:
-        logger.warning(f"Admin {current_user.id} attempted to delete their own account")
-        return jsonify({'error': 'You cannot delete your own account'}), 400
-    db.session.delete(user)
-    db.session.commit()
-    logger.info(f"User {user_id} deleted by admin {current_user.id}")
-    return jsonify({'success': True})
-
 @bp.route('/admin/feature_access')
 @login_required
 @admin_required
@@ -144,30 +111,4 @@ def update_feature_access():
     except SQLAlchemyError as e:
         db.session.rollback()
         logger.error(f"Database error while updating feature access for user {user_id}: {str(e)}")
-        return jsonify({'error': 'Database error', 'message': str(e)}), 500
-
-@bp.route('/admin/bulk_action', methods=['POST'])
-@login_required
-@admin_required
-def bulk_action():
-    action = request.form.get('action')
-    user_ids = request.form.getlist('user_ids[]')
-    
-    if not action or not user_ids:
-        return jsonify({'error': 'Invalid request'}), 400
-    
-    try:
-        if action == 'delete':
-            User.query.filter(User.id.in_(user_ids), User.id != current_user.id).delete(synchronize_session=False)
-        elif action == 'toggle_admin':
-            users = User.query.filter(User.id.in_(user_ids), User.id != current_user.id).all()
-            for user in users:
-                user.is_admin = not user.is_admin
-        
-        db.session.commit()
-        logger.info(f"Bulk action '{action}' performed on users {user_ids} by admin {current_user.id}")
-        return jsonify({'success': True, 'message': f'Bulk action {action} completed successfully'})
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        logger.error(f"Database error while performing bulk action: {str(e)}")
         return jsonify({'error': 'Database error', 'message': str(e)}), 500
