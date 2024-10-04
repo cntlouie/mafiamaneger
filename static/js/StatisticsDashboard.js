@@ -55,7 +55,7 @@ function StatisticsDashboard() {
             return (
               <tr key={stat.name}>
                 <td className="py-2 px-4 border-b font-medium">{stat.name}</td>
-                <td className="py-2 px-4 border-b">{stat.currentValue}</td>
+                <td className="py-2 px-4 border-b">{formatNumber(stat.currentValue)}</td>
                 <td className="py-2 px-4 border-b">
                   <span className={`flex items-center ${isPositive ? 'text-green-600' : isNeutral ? 'text-gray-500' : 'text-red-600'}`}>
                     {isPositive ? (
@@ -65,7 +65,7 @@ function StatisticsDashboard() {
                     ) : (
                       <ArrowDownIcon />
                     )}
-                    {Math.abs(change)}
+                    {formatNumber(Math.abs(change))}
                   </span>
                 </td>
               </tr>

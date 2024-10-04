@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from models import Stats, db
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import SQLAlchemyError, DataError
 
 bp = Blueprint('stats', __name__)
 
@@ -13,17 +13,22 @@ def update_stats():
         if not data:
             return jsonify({'error': 'No data provided'}), 400
 
-        # Convert string values to integers
+        # Validate and convert data to integers
         for key, value in data.items():
             try:
                 data[key] = int(value)
+                if data[key] < 0:
+                    return jsonify({'error': f'Invalid value for {key}. Must be a non-negative integer.'}), 400
             except ValueError:
-                return jsonify({'error': f'Invalid value for {key}'}), 400
+                return jsonify({'error': f'Invalid value for {key}. Must be a valid integer.'}), 400
 
         new_stats = Stats(user_id=current_user.id, **data)
         db.session.add(new_stats)
         db.session.commit()
         return jsonify({'message': 'Stats updated successfully'}), 200
+    except DataError as e:
+        db.session.rollback()
+        return jsonify({'error': 'Data error. One or more values exceed the maximum allowed value.', 'details': str(e)}), 400
     except SQLAlchemyError as e:
         db.session.rollback()
         return jsonify({'error': 'Database error', 'details': str(e)}), 500
