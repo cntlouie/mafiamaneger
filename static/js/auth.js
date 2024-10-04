@@ -19,7 +19,10 @@ function register() {
             window.location.href = '/login';
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An unexpected error occurred. Please try again.');
+    });
 }
 
 function login() {
@@ -33,7 +36,12 @@ function login() {
         },
         body: JSON.stringify({ username, password }),
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.error) {
             alert(data.error);
@@ -45,7 +53,10 @@ function login() {
             }
         }
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An unexpected error occurred. Please try again.');
+    });
 }
 
 function logout() {
@@ -55,5 +66,8 @@ function logout() {
         alert(data.message);
         window.location.href = '/';
     })
-    .catch(error => console.error('Error:', error));
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An unexpected error occurred. Please try again.');
+    });
 }

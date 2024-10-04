@@ -29,19 +29,34 @@ def register():
 
 @bp.route('/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    user = User.query.filter_by(username=data.get('username')).first()
-    logger.info(f"Login attempt for user: {data.get('username')}")
-    if user and user.check_password(data.get('password')):
-        login_user(user)
-        logger.info(f"User {user.username} logged in successfully. Admin status: {user.is_admin}")
-        return jsonify({
-            'message': 'Logged in successfully',
-            'redirect': url_for('admin.admin_dashboard') if user.is_admin else url_for('dashboard'),
-            'is_admin': user.is_admin
-        }), 200
-    logger.warning(f"Failed login attempt for user: {data.get('username')}")
-    return jsonify({'error': 'Invalid username or password'}), 401
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+
+        username = data.get('username')
+        password = data.get('password')
+
+        if not username or not password:
+            return jsonify({'error': 'Username and password are required'}), 400
+
+        user = User.query.filter_by(username=username).first()
+        logger.info(f"Login attempt for user: {username}")
+
+        if user and user.check_password(password):
+            login_user(user)
+            logger.info(f"User {user.username} logged in successfully. Admin status: {user.is_admin}")
+            return jsonify({
+                'message': 'Logged in successfully',
+                'redirect': url_for('admin.admin_dashboard') if user.is_admin else url_for('dashboard'),
+                'is_admin': user.is_admin
+            }), 200
+        else:
+            logger.warning(f"Failed login attempt for user: {username}")
+            return jsonify({'error': 'Invalid username or password'}), 401
+    except Exception as e:
+        logger.error(f"Error during login: {str(e)}")
+        return jsonify({'error': 'An unexpected error occurred'}), 500
 
 @bp.route('/logout')
 @login_required
