@@ -49,7 +49,7 @@ function updateStatsDisplay(stats) {
     for (const [key, value] of Object.entries(stats)) {
         const element = document.getElementById(key.replace(/_/g, '-'));
         if (element) {
-            element.textContent = value;
+            element.textContent = value.current;
         }
     }
 }

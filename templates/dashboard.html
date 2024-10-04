@@ -7,7 +7,6 @@
         <div id="react-stats-dashboard"></div>
         <h3 class="text-xl font-bold mt-6 mb-2">Update Stats</h3>
         <form id="stats-form">
-            <!-- Add input fields for all stats -->
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label for="total-wins" class="block text-gray-700 text-sm font-bold mb-2">Total Wins</label>
@@ -17,7 +16,58 @@
                     <label for="total-losses" class="block text-gray-700 text-sm font-bold mb-2">Total Losses</label>
                     <input type="number" id="total-losses" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
-                <!-- Add more input fields for other stats -->
+                <div>
+                    <label for="assaults-won" class="block text-gray-700 text-sm font-bold mb-2">Assaults Won</label>
+                    <input type="number" id="assaults-won" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="assaults-lost" class="block text-gray-700 text-sm font-bold mb-2">Assaults Lost</label>
+                    <input type="number" id="assaults-lost" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="defending-battles-won" class="block text-gray-700 text-sm font-bold mb-2">Defending Battles Won</label>
+                    <input type="number" id="defending-battles-won" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="defending-battles-lost" class="block text-gray-700 text-sm font-bold mb-2">Defending Battles Lost</label>
+                    <input type="number" id="defending-battles-lost" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="kills" class="block text-gray-700 text-sm font-bold mb-2">Kills</label>
+                    <input type="number" id="kills" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="destroyed-traps" class="block text-gray-700 text-sm font-bold mb-2">Destroyed Traps</label>
+                    <input type="number" id="destroyed-traps" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="lost-associates" class="block text-gray-700 text-sm font-bold mb-2">Lost Associates</label>
+                    <input type="number" id="lost-associates" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="lost-traps" class="block text-gray-700 text-sm font-bold mb-2">Lost Traps</label>
+                    <input type="number" id="lost-traps" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="healed-associates" class="block text-gray-700 text-sm font-bold mb-2">Healed Associates</label>
+                    <input type="number" id="healed-associates" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="wounded-enemy-associates" class="block text-gray-700 text-sm font-bold mb-2">Wounded Enemy Associates</label>
+                    <input type="number" id="wounded-enemy-associates" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="enemy-turfs-destroyed" class="block text-gray-700 text-sm font-bold mb-2">Enemy Turfs Destroyed</label>
+                    <input type="number" id="enemy-turfs-destroyed" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="turf-destroyed-times" class="block text-gray-700 text-sm font-bold mb-2">Turf Destroyed Times</label>
+                    <input type="number" id="turf-destroyed-times" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
+                <div>
+                    <label for="eliminated-enemy-influence" class="block text-gray-700 text-sm font-bold mb-2">Eliminated Enemy Influence</label>
+                    <input type="number" id="eliminated-enemy-influence" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                </div>
             </div>
             <button type="button" onclick="updateStats()" class="btn btn-blue mt-4">Update Stats</button>
         </form>

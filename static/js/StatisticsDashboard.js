@@ -25,10 +25,10 @@ function StatisticsDashboard() {
     fetch('/stats')
       .then(response => response.json())
       .then(data => {
-        const stats = Object.entries(data).map(([name, value]) => ({
+        const stats = Object.entries(data).map(([name, values]) => ({
           name,
-          currentValue: value,
-          previousValue: value // For now, we'll use the same value for both current and previous
+          currentValue: values.current,
+          previousValue: values.previous
         }));
         setStatistics(stats);
       })
