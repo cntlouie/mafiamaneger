@@ -9,7 +9,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(256), nullable=False)
     stats = db.relationship('Stats', backref='user', lazy=True)
     faction_id = db.Column(db.Integer, db.ForeignKey('faction.id'), nullable=True)
-    faction = db.relationship('Faction', back_populates='members')
+    faction = db.relationship('Faction', back_populates='members', foreign_keys=[faction_id])
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -42,4 +42,5 @@ class Faction(db.Model):
     name = db.Column(db.String(64), unique=True, nullable=False)
     invitation_code = db.Column(db.String(16), unique=True, nullable=False)
     leader_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    members = db.relationship('User', back_populates='faction', lazy=True)
+    members = db.relationship('User', back_populates='faction', lazy=True, foreign_keys='User.faction_id')
+    leader = db.relationship('User', foreign_keys=[leader_id])
