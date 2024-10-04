@@ -1,8 +1,8 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager, current_user, login_required
 
 class Base(DeclarativeBase):
     pass
@@ -45,6 +45,11 @@ def register():
 @app.route('/login')
 def login():
     return render_template('login.html')
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
 
 with app.app_context():
     db.create_all()

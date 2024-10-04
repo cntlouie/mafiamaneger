@@ -38,7 +38,7 @@ function login() {
         if (data.error) {
             alert(data.error);
         } else {
-            window.location.href = '/dashboard';
+            window.location.href = data.redirect;
         }
     })
     .catch(error => console.error('Error:', error));
