@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">User Management</h1>
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <table class="w-full">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2">Username</th>
+                    <th class="px-4 py-2">Email</th>
+                    <th class="px-4 py-2">Admin</th>
+                    <th class="px-4 py-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users.items %}
+                <tr>
+                    <td class="border px-4 py-2">{{ user.username }}</td>
+                    <td class="border px-4 py-2">{{ user.email }}</td>
+                    <td class="border px-4 py-2">
+                        <input type="checkbox" {% if user.is_admin %}checked{% endif %} onchange="toggleAdmin({{ user.id }}, this)" {% if user == current_user %}disabled{% endif %}>
+                    </td>
+                    <td class="border px-4 py-2">
+                        <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-blue mr-2">Edit</a>
+                        <button onclick="deleteUser({{ user.id }})" {% if user == current_user %}disabled{% endif %} class="btn btn-red">Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-4">
+            {% if users.has_prev %}
+                <a href="{{ url_for('admin.list_users', page=users.prev_num) }}" class="btn btn-blue">Previous</a>
+            {% endif %}
+            {% if users.has_next %}
+                <a href="{{ url_for('admin.list_users', page=users.next_num) }}" class="btn btn-blue">Next</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleAdmin(userId, checkbox) {
+    fetch(`/admin/users/${userId}/toggle_admin`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            checkbox.checked = !checkbox.checked;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        checkbox.checked = !checkbox.checked;
+    });
+}
+
+function deleteUser(userId) {
+    if (confirm('Are you sure you want to delete this user?')) {
+        fetch(`/admin/users/${userId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else if (data.error) {
+                alert(data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+}
+</script>
+{% endblock %}

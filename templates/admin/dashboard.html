@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Admin Dashboard</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <h2 class="text-2xl font-bold mb-4">User Management</h2>
+            <a href="{{ url_for('admin.list_users') }}" class="btn btn-blue">Manage Users</a>
+        </div>
+        <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <h2 class="text-2xl font-bold mb-4">Feature Access</h2>
+            <a href="{{ url_for('admin.manage_feature_access') }}" class="btn btn-blue">Manage Feature Access</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

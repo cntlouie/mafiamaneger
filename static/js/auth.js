@@ -38,7 +38,11 @@ function login() {
         if (data.error) {
             alert(data.error);
         } else {
-            window.location.href = data.redirect;
+            if (data.is_admin) {
+                window.location.href = '/admin/dashboard';
+            } else {
+                window.location.href = data.redirect;
+            }
         }
     })
     .catch(error => console.error('Error:', error));

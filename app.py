@@ -4,6 +4,7 @@ from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager, current_user, login_required
+from flask_migrate import Migrate
 
 class Base(DeclarativeBase):
     pass
@@ -29,12 +30,13 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 app.config['SECRET_KEY'] = os.urandom(24)
 
 db.init_app(app)
+migrate = Migrate(app, db)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 
-from models import User
+from models import User, Faction, Stats, FeatureAccess
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -81,13 +83,38 @@ def internal_error(error):
     return render_template('500.html'), 500
 
 # Import and register blueprints after all route definitions
-from routes import auth, stats, factions
+from routes import auth, stats, factions, admin
 app.register_blueprint(auth.bp)
 app.register_blueprint(stats.bp)
 app.register_blueprint(factions.bp)
+app.register_blueprint(admin.bp)
 
-with app.app_context():
-    db.create_all()
+@app.route('/promote_first_user_to_admin')
+def promote_first_user_to_admin():
+    first_user = User.query.first()
+    if first_user:
+        first_user.is_admin = True
+        db.session.commit()
+        return jsonify({'message': f'User {first_user.username} promoted to admin'}), 200
+    return jsonify({'message': 'No users found'}), 404
+
+def ensure_admin_exists():
+    admin_user = User.query.filter_by(is_admin=True).first()
+    if not admin_user:
+        first_user = User.query.first()
+        if first_user:
+            first_user.is_admin = True
+            db.session.commit()
+            logger.info(f"Promoted user {first_user.username} to admin")
+        else:
+            logger.warning("No users found in the database")
+
+def setup_database():
+    with app.app_context():
+        db.create_all()
+        ensure_admin_exists()
+        logger.info("Database tables created and admin user ensured")
 
 if __name__ == "__main__":
+    setup_database()
     app.run(host="0.0.0.0", port=5000)

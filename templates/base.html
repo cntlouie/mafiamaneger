@@ -13,6 +13,9 @@
             <div>
                 {% if current_user.is_authenticated %}
                     <a href="/dashboard" class="text-white mr-4">Dashboard</a>
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin.admin_dashboard') }}" class="text-white mr-4">Admin</a>
+                    {% endif %}
                     <button onclick="logout()" class="btn btn-blue">Logout</button>
                 {% else %}
                     <a href="/login" class="text-white mr-4">Login</a>

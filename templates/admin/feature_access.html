@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Manage Feature Access</h1>
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <table class="w-full">
+            <thead>
+                <tr>
+                    <th class="px-4 py-2">Username</th>
+                    {% for feature in features %}
+                    <th class="px-4 py-2">{{ feature|replace('_', ' ')|title }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td class="border px-4 py-2">{{ user.username }}</td>
+                    {% for feature in features %}
+                    <td class="border px-4 py-2">
+                        <input type="checkbox" 
+                               {% if user.feature_access|selectattr("feature", "equalto", feature)|first %}
+                               checked
+                               {% endif %}
+                               onchange="updateFeatureAccess({{ user.id }}, '{{ feature }}', this.checked)">
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function updateFeatureAccess(userId, feature, enabled) {
+    fetch('/admin/feature_access/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `user_id=${userId}&feature=${feature}&enabled=${enabled}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
+{% endblock %}

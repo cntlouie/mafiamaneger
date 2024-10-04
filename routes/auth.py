@@ -2,8 +2,10 @@ from flask import Blueprint, request, jsonify, redirect, url_for
 from flask_login import login_user, login_required, logout_user
 from werkzeug.security import generate_password_hash
 from models import User, db
+import logging
 
 bp = Blueprint('auth', __name__)
+logger = logging.getLogger(__name__)
 
 @bp.route('/register', methods=['POST'])
 def register():
@@ -28,9 +30,12 @@ def register():
 def login():
     data = request.get_json()
     user = User.query.filter_by(username=data.get('username')).first()
+    logger.info(f"Login attempt for user: {data.get('username')}")
     if user and user.check_password(data.get('password')):
         login_user(user)
-        return jsonify({'message': 'Logged in successfully', 'redirect': url_for('dashboard')}), 200
+        logger.info(f"User {user.username} logged in successfully. Admin status: {user.is_admin}")
+        return jsonify({'message': 'Logged in successfully', 'redirect': url_for('dashboard'), 'is_admin': user.is_admin}), 200
+    logger.warning(f"Failed login attempt for user: {data.get('username')}")
     return jsonify({'error': 'Invalid username or password'}), 401
 
 @bp.route('/logout')
