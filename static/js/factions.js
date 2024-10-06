@@ -1,25 +1,3 @@
-function createFaction() {
-    const factionName = document.getElementById('faction-name').value;
-
-    fetch('/faction/create', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: factionName }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert(data.error);
-        } else {
-            alert(`Faction created successfully. Invitation code: ${data.invitation_code}`);
-            getFactionMembers();
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
-
 function joinFaction() {
     const invitationCode = document.getElementById('invitation-code').value;
 
@@ -60,7 +38,7 @@ function updateFactionMembersDisplay(members) {
     membersList.innerHTML = '';
     members.forEach(member => {
         const li = document.createElement('li');
-        li.textContent = member.username; // Update this line to display the username
+        li.textContent = member.username;
         membersList.appendChild(li);
     });
 }
