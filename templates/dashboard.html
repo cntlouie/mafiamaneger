@@ -77,6 +77,14 @@
         <div id="faction-info">
             <!-- Faction info will be populated here by JavaScript -->
         </div>
+        <h3 class="text-xl font-bold mt-6 mb-2">Create Faction</h3>
+        <form id="create-faction-form">
+            <div class="mb-4">
+                <label for="faction-name" class="block text-gray-700 text-sm font-bold mb-2">Faction Name</label>
+                <input type="text" id="faction-name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <button type="button" onclick="createFaction()" class="btn btn-blue">Create Faction</button>
+        </form>
         <h3 class="text-xl font-bold mt-6 mb-2">Join Faction</h3>
         <form id="join-faction-form">
             <div class="mb-4">

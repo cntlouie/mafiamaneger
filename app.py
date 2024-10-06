@@ -10,6 +10,7 @@ from sqlalchemy.exc import SQLAlchemyError
 class Base(DeclarativeBase):
     pass
 
+db = SQLAlchemy(model_class=Base)
 app = Flask(__name__)
 
 # Configure logging
@@ -29,7 +30,6 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 }
 app.config['SECRET_KEY'] = os.urandom(24)
 
-db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 migrate = Migrate(app, db)
 

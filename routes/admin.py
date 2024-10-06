@@ -1,11 +1,10 @@
 from flask import Blueprint, render_template, request, jsonify, abort, current_app
 from flask_login import login_required, current_user
-from models import User, db, FeatureAccess, Faction
+from models import User, db, FeatureAccess
 from functools import wraps
 from sqlalchemy.exc import SQLAlchemyError
 import logging
 from datetime import datetime, timedelta
-import uuid
 
 bp = Blueprint('admin', __name__)
 logger = logging.getLogger(__name__)
@@ -112,68 +111,4 @@ def update_feature_access():
     except SQLAlchemyError as e:
         db.session.rollback()
         logger.error(f"Database error while updating feature access for user {user_id}: {str(e)}")
-        return jsonify({'error': 'Database error', 'message': str(e)}), 500
-
-@bp.route('/admin/faction_management')
-@login_required
-@admin_required
-def faction_management():
-    logger.info(f"Faction management accessed by admin {current_user.id}")
-    return render_template('admin/faction_management.html')
-
-@bp.route('/admin/faction/create', methods=['POST'])
-@login_required
-@admin_required
-def create_faction():
-    data = request.get_json()
-    name = data.get('name')
-    leader_username = data.get('leader_username')
-
-    if not name or not leader_username:
-        return jsonify({'error': 'Faction name and leader username are required'}), 400
-
-    leader = User.query.filter_by(username=leader_username).first()
-    if not leader:
-        return jsonify({'error': 'Leader not found'}), 404
-
-    try:
-        new_faction = Faction(name=name, leader_username=leader_username, invitation_code=str(uuid.uuid4())[:8])
-        db.session.add(new_faction)
-        leader.faction = new_faction
-        db.session.commit()
-        logger.info(f"Faction '{name}' created by admin {current_user.id}")
-        return jsonify({'success': True, 'message': 'Faction created successfully'}), 201
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        logger.error(f"Database error while creating faction: {str(e)}")
-        return jsonify({'error': 'Database error', 'message': str(e)}), 500
-
-@bp.route('/admin/factions')
-@login_required
-@admin_required
-def get_factions():
-    factions = Faction.query.all()
-    factions_data = [{
-        'id': faction.id,
-        'name': faction.name,
-        'leader_username': faction.leader_username,
-        'member_count': len(faction.members)
-    } for faction in factions]
-    return jsonify({'factions': factions_data})
-
-@bp.route('/admin/faction/<int:faction_id>/delete', methods=['POST'])
-@login_required
-@admin_required
-def delete_faction(faction_id):
-    faction = Faction.query.get_or_404(faction_id)
-    try:
-        for member in faction.members:
-            member.faction = None
-        db.session.delete(faction)
-        db.session.commit()
-        logger.info(f"Faction {faction_id} deleted by admin {current_user.id}")
-        return jsonify({'success': True, 'message': 'Faction deleted successfully'}), 200
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        logger.error(f"Database error while deleting faction {faction_id}: {str(e)}")
         return jsonify({'error': 'Database error', 'message': str(e)}), 500
