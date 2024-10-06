@@ -39,6 +39,10 @@ args = "Initialize Migration"
 task = "workflow.run"
 args = "Create New Migration"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Apply New Migration"
+
 [[workflows.workflow]]
 name = "Start Flask Server"
 author = "agent"
@@ -116,8 +120,19 @@ agentRequireRestartOnSave = false
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "flask db migrate -m 'Add is_admin column to User model'"
+args = "flask db migrate -m 'Add is_admin and leader_username columns'"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Apply New Migration"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "flask db upgrade"
 
 [deployment]
 run = ["sh", "-c", "python main.py"]
