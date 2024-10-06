@@ -60,7 +60,7 @@ function updateFactionMembersDisplay(members) {
     membersList.innerHTML = '';
     members.forEach(member => {
         const li = document.createElement('li');
-        li.textContent = member;
+        li.textContent = member.username; // Update this line to display the username
         membersList.appendChild(li);
     });
 }
