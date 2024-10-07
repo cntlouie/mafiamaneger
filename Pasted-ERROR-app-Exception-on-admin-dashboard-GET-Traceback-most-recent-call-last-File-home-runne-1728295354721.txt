@@ -1,0 +1,91 @@
+ERROR:app:Exception on /admin/dashboard [GET]
+Traceback (most recent call last):
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/routes/admin.py", line 22, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/routes/admin.py", line 33, in admin_dashboard
+    new_users_last_week = User.query.filter(User.created_at >= one_week_ago).count()
+                                            ^^^^^^^^^^^^^^^
+AttributeError: type object 'User' has no attribute 'created_at'
+INFO:werkzeug:172.31.196.173 - - [07/Oct/2024 10:01:22] "GET /admin/dashboard HTTP/1.1" 500 -
+ERROR:werkzeug:Error on request:
+Traceback (most recent call last):
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/routes/admin.py", line 22, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/routes/admin.py", line 33, in admin_dashboard
+    new_users_last_week = User.query.filter(User.created_at >= one_week_ago).count()
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: type object 'User' has no attribute 'created_at'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/werkzeug/serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/werkzeug/serving.py", line 331, in execute
+    application_iter = app(environ, start_response)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 823, in handle_exception
+    server_error = self.ensure_sync(handler)(server_error)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/app.py", line 84, in internal_error
+    return render_template('500.html'), 500
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1084, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1013, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 972, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 65, in get_source
+    return self._get_source_fast(environment, template)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 99, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: 500.html
