@@ -37,6 +37,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 
+# Import models after db is initialized
 from models import User, Faction, Stats, FeatureAccess
 
 @login_manager.user_loader
