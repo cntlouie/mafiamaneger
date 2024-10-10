@@ -34,20 +34,32 @@ def create_app():
     }
     app.config['SECRET_KEY'] = os.urandom(24)
 
+    # Initialize SQLAlchemy with the app
     db.init_app(app)
 
+    # Initialize Flask-Migrate
     migrate = Migrate(app, db)
 
+    # Initialize Flask-Login
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
 
+    # Import models after db initialization
     from models import User, Faction, Stats, FeatureAccess
 
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
 
+    # Register blueprints
+    from routes import auth, stats, factions, admin
+    app.register_blueprint(auth.bp)
+    app.register_blueprint(stats.bp)
+    app.register_blueprint(factions.bp)
+    app.register_blueprint(admin.bp)
+
+    # Routes
     @app.route('/')
     def index():
         logger.info(f"Received request for index page from {request.remote_addr}")
@@ -96,13 +108,6 @@ def create_app():
         db.session.rollback()
         logger.error(f"Internal server error: {str(error)}")
         return jsonify({'error': 'Internal server error'}), 500
-
-    # Import and register blueprints
-    from routes import auth, stats, factions, admin
-    app.register_blueprint(auth.bp)
-    app.register_blueprint(stats.bp)
-    app.register_blueprint(factions.bp)
-    app.register_blueprint(admin.bp)
 
     @app.route('/promote_first_user_to_admin')
     def promote_first_user_to_admin():
