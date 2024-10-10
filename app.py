@@ -12,8 +12,6 @@ import json
 class Base(DeclarativeBase):
     pass
 
-db = SQLAlchemy(model_class=Base)
-
 def create_app():
     app = Flask(__name__)
 
@@ -34,7 +32,10 @@ def create_app():
     }
     app.config['SECRET_KEY'] = os.urandom(24)
 
+    # Create db instance inside create_app function
+    db = SQLAlchemy(model_class=Base)
     db.init_app(app)
+
     migrate = Migrate(app, db)
 
     login_manager = LoginManager()
