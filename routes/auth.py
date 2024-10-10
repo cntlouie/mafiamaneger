@@ -3,7 +3,6 @@ from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from models import User, db
 import logging
-from sqlalchemy.exc import SQLAlchemyError
 
 bp = Blueprint('auth', __name__)
 logger = logging.getLogger(__name__)
@@ -55,11 +54,8 @@ def login():
         else:
             logger.warning(f"Failed login attempt for user: {username}")
             return jsonify({'error': 'Invalid username or password'}), 401
-    except SQLAlchemyError as e:
-        logger.error(f"Database error during login: {str(e)}")
-        return jsonify({'error': 'Database error occurred. Please try again later.'}), 500
     except Exception as e:
-        logger.error(f"Unexpected error during login: {str(e)}")
+        logger.error(f"Error during login: {str(e)}")
         return jsonify({'error': 'An unexpected error occurred'}), 500
 
 @bp.route('/logout')

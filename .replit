@@ -47,18 +47,6 @@ args = "Apply New Migration"
 task = "workflow.run"
 args = "Check Current Migration"
 
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Check Admin Users"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Apply Pending Migrations"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Check User Model"
-
 [[workflows.workflow]]
 name = "Start Flask Server"
 author = "agent"
@@ -136,7 +124,7 @@ agentRequireRestartOnSave = false
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "flask db migrate -m 'Add created_at column to User model'"
+args = "flask db migrate -m 'Add is_admin and leader_username columns'"
 waitForPort = 5000
 
 [[workflows.workflow]]
@@ -160,39 +148,6 @@ agentRequireRestartOnSave = false
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "flask db current"
-
-[[workflows.workflow]]
-name = "Check Admin Users"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "flask shell"
-
-[[workflows.workflow]]
-name = "Apply Pending Migrations"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "flask db upgrade"
-
-[[workflows.workflow]]
-name = "Check User Model"
-author = "agent"
-
-[workflows.workflow.metadata]
-agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "flask shell"
 
 [deployment]
 run = ["sh", "-c", "python main.py"]

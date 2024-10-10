@@ -36,8 +36,6 @@ def admin_dashboard():
     users_with_faction_management = FeatureAccess.query.filter_by(feature='faction_management', enabled=True).count()
     users_with_leaderboard = FeatureAccess.query.filter_by(feature='leaderboard', enabled=True).count()
     
-    recent_users = User.query.order_by(User.created_at.desc()).limit(5).all()
-    
     logger.info(f"Admin dashboard accessed by user {current_user.id}")
     return render_template('admin/dashboard.html',
                            total_users=total_users,
@@ -45,8 +43,7 @@ def admin_dashboard():
                            new_users_last_week=new_users_last_week,
                            users_with_advanced_stats=users_with_advanced_stats,
                            users_with_faction_management=users_with_faction_management,
-                           users_with_leaderboard=users_with_leaderboard,
-                           recent_users=recent_users)
+                           users_with_leaderboard=users_with_leaderboard)
 
 @bp.route('/admin/users')
 @login_required
