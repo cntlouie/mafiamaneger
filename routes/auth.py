@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify, redirect, url_for, current_app
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
-from models import User, db
+from models import User
+from app import db
 import logging
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
