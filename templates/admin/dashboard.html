@@ -22,7 +22,7 @@
             <h2 class="text-2xl font-bold mb-4">Quick Actions</h2>
             <a href="{{ url_for('admin.list_users') }}" class="btn btn-blue block mb-2">User List</a>
             <a href="{{ url_for('admin.manage_feature_access') }}" class="btn btn-blue block mb-2">Feature Access</a>
-            <a href="#" class="btn btn-blue block mb-2">View Logs</a>
+            <a href="{{ url_for('admin.view_logs') }}" class="btn btn-blue block mb-2">View Logs</a>
         </div>
     </div>
 </div>

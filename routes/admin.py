@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, abort, current_app
+from flask import Blueprint, render_template, request, jsonify, abort, current_app, redirect, url_for
 from flask_login import login_required, current_user
 from models import User, db, FeatureAccess
 from functools import wraps
@@ -112,3 +112,39 @@ def update_feature_access():
         db.session.rollback()
         logger.error(f"Database error while updating feature access for user {user_id}: {str(e)}")
         return jsonify({'error': 'Database error', 'message': str(e)}), 500
+
+@bp.route('/admin/logs')
+@login_required
+@admin_required
+def view_logs():
+    # Implement log viewing functionality here
+    # For now, we'll just return a placeholder message
+    logger.info(f"Logs viewed by admin {current_user.id}")
+    return render_template('admin/logs.html')
+
+@bp.route('/admin/users/bulk_action', methods=['POST'])
+@login_required
+@admin_required
+def bulk_action():
+    action = request.form.get('action')
+    user_ids = request.form.getlist('user_ids[]')
+    
+    if not action or not user_ids:
+        return jsonify({'error': 'Invalid request'}), 400
+    
+    try:
+        if action == 'delete':
+            User.query.filter(User.id.in_(user_ids)).delete(synchronize_session=False)
+        elif action == 'toggle_admin':
+            for user in User.query.filter(User.id.in_(user_ids)):
+                if user != current_user:
+                    user.is_admin = not user.is_admin
+        
+        db.session.commit()
+        logger.info(f"Bulk action '{action}' performed on users {user_ids} by admin {current_user.id}")
+        return jsonify({'success': True, 'message': f'Bulk action {action} completed successfully'})
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logger.error(f"Database error during bulk action: {str(e)}")
+        return jsonify({'error': 'Database error', 'message': str(e)}), 500
+
