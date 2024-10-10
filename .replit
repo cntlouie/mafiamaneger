@@ -124,7 +124,7 @@ agentRequireRestartOnSave = false
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "flask db migrate -m 'Add is_admin and leader_username columns'"
+args = "flask db migrate -m 'Add created_at column to User model'"
 waitForPort = 5000
 
 [[workflows.workflow]]
