@@ -7,11 +7,13 @@ from flask_login import LoginManager, current_user, login_required
 from flask_migrate import Migrate
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import HTTPException
+import json
 
 class Base(DeclarativeBase):
     pass
 
 db = SQLAlchemy(model_class=Base)
+
 app = Flask(__name__)
 
 # Configure logging
@@ -39,7 +41,6 @@ login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 
 from models import User, Faction, Stats, FeatureAccess
-from routes.auth import init_auth
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -146,5 +147,4 @@ def setup_database():
 
 if __name__ == "__main__":
     setup_database()
-    init_auth(app)
     app.run(host="0.0.0.0", port=5000)
