@@ -14,6 +14,10 @@ flask = "^3.0.3"
 flask-login = "^0.6.3"
 marshmallow = "^3.22.0"
 flask-migrate = "^4.0.7"
+werkzeug = "^3.0.4"
+sqlalchemy = "^2.0.35"
+flask-limiter = "^3.8.0"
+flask-wtf = "^1.2.1"
 
 
 [build-system]

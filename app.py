@@ -6,6 +6,7 @@ from sqlalchemy.orm import DeclarativeBase
 from flask_login import LoginManager, current_user, login_required
 from flask_migrate import Migrate
 from sqlalchemy.exc import SQLAlchemyError
+from werkzeug.exceptions import HTTPException
 
 class Base(DeclarativeBase):
     pass
@@ -38,6 +39,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 
 from models import User, Faction, Stats, FeatureAccess
+from routes.auth import init_auth
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -74,14 +76,23 @@ def health_check():
         logger.error(f"Health check failed: {str(e)}")
         return jsonify({'status': 'unhealthy', 'database': 'disconnected', 'error': str(e)}), 500
 
-@app.errorhandler(404)
-def not_found_error(error):
-    return render_template('404.html'), 404
+@app.errorhandler(HTTPException)
+def handle_exception(e):
+    """Return JSON instead of HTML for HTTP errors."""
+    response = e.get_response()
+    response.data = json.dumps({
+        "code": e.code,
+        "name": e.name,
+        "description": e.description,
+    })
+    response.content_type = "application/json"
+    return response
 
 @app.errorhandler(500)
 def internal_error(error):
     db.session.rollback()
-    return render_template('500.html'), 500
+    logger.error(f"Internal server error: {str(error)}")
+    return jsonify({'error': 'Internal server error'}), 500
 
 # Import and register blueprints after all route definitions
 from routes import auth, stats, factions, admin
@@ -135,4 +146,5 @@ def setup_database():
 
 if __name__ == "__main__":
     setup_database()
+    init_auth(app)
     app.run(host="0.0.0.0", port=5000)

@@ -3,16 +3,26 @@ from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from models import User, db
 import logging
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_wtf.csrf import CSRFProtect
 
 bp = Blueprint('auth', __name__)
 logger = logging.getLogger(__name__)
 
+limiter = Limiter(key_func=get_remote_address)
+csrf = CSRFProtect()
+
 @bp.route('/register', methods=['POST'])
+@limiter.limit("5 per minute")
 def register():
     data = request.get_json()
     username = data.get('username')
     email = data.get('email')
     password = data.get('password')
+
+    if not username or not email or not password:
+        return jsonify({'error': 'All fields are required'}), 400
 
     if User.query.filter_by(username=username).first():
         return jsonify({'error': 'Username already exists'}), 400
@@ -28,6 +38,7 @@ def register():
     return jsonify({'message': 'User registered successfully'}), 201
 
 @bp.route('/login', methods=['POST'])
+@limiter.limit("5 per minute")
 def login():
     try:
         data = request.get_json()
@@ -70,3 +81,7 @@ def logout():
 def check_admin():
     logger.info(f"Checking admin status for user {current_user.username}")
     return jsonify({'is_admin': current_user.is_admin}), 200
+
+def init_auth(app):
+    limiter.init_app(app)
+    csrf.init_app(app)
