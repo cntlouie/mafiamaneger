@@ -1,18 +1,12 @@
-import os
-import logging
 from flask import Flask, render_template, redirect, url_for, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
-from flask_login import LoginManager, current_user, login_required
 from flask_migrate import Migrate
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.exceptions import HTTPException
+from extensions import db
+from flask_login import LoginManager, current_user
+import os
+import logging
 import json
-
-class Base(DeclarativeBase):
-    pass
-
-db = SQLAlchemy(model_class=Base)
 
 def create_app():
     app = Flask(__name__)
@@ -45,12 +39,13 @@ def create_app():
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
 
-    # Import models after db initialization
-    from models import User, Faction, Stats, FeatureAccess
-
     @login_manager.user_loader
     def load_user(user_id):
+        from models import User
         return User.query.get(int(user_id))
+
+    # Import models after db initialization
+    from models import User, Faction, Stats, FeatureAccess
 
     # Register blueprints
     from routes import auth, stats, factions, admin
@@ -76,7 +71,6 @@ def create_app():
         return render_template('login.html')
 
     @app.route('/dashboard')
-    @login_required
     def dashboard():
         logger.info(f"Received request for dashboard page from {request.remote_addr}")
         return render_template('dashboard.html')
