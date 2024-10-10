@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify, redirect, url_for, current_app
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
-from models import User
-from app import db
+from models import User, db
 import logging
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_wtf.csrf import CSRFProtect
+from sqlalchemy.exc import SQLAlchemyError
 
 bp = Blueprint('auth', __name__)
 logger = logging.getLogger(__name__)
@@ -32,11 +32,16 @@ def register():
 
     new_user = User(username=username, email=email)
     new_user.set_password(password)
-    db.session.add(new_user)
-    db.session.commit()
-
-    logger.info(f"New user registered: {username}")
-    return jsonify({'message': 'User registered successfully'}), 201
+    
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        logger.info(f"New user registered: {username}")
+        return jsonify({'message': 'User registered successfully'}), 201
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        logger.error(f"Error registering user: {str(e)}")
+        return jsonify({'error': 'An error occurred while registering the user'}), 500
 
 @bp.route('/login', methods=['POST'])
 @limiter.limit("5 per minute")
@@ -66,6 +71,9 @@ def login():
         else:
             logger.warning(f"Failed login attempt for user: {username}")
             return jsonify({'error': 'Invalid username or password'}), 401
+    except SQLAlchemyError as e:
+        logger.error(f"Database error during login: {str(e)}")
+        return jsonify({'error': 'A database error occurred'}), 500
     except Exception as e:
         logger.error(f"Error during login: {str(e)}")
         return jsonify({'error': 'An unexpected error occurred'}), 500
