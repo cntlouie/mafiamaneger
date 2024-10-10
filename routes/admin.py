@@ -5,6 +5,7 @@ from functools import wraps
 from sqlalchemy.exc import SQLAlchemyError
 import logging
 from datetime import datetime, timedelta
+import os
 
 bp = Blueprint('admin', __name__)
 logger = logging.getLogger(__name__)
@@ -117,10 +118,45 @@ def update_feature_access():
 @login_required
 @admin_required
 def view_logs():
-    # Implement log viewing functionality here
-    # For now, we'll just return a placeholder message
     logger.info(f"Logs viewed by admin {current_user.id}")
     return render_template('admin/logs.html')
+
+@bp.route('/admin/fetch_logs')
+@login_required
+@admin_required
+def fetch_logs():
+    log_level = request.args.get('level', 'all')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    log_file_path = 'app.log'  # Update this with the actual log file path
+    
+    if not os.path.exists(log_file_path):
+        return jsonify({'logs': ['No log file found.']})
+
+    with open(log_file_path, 'r') as log_file:
+        logs = log_file.readlines()
+
+    filtered_logs = []
+    for log in logs:
+        log_parts = log.split()
+        if len(log_parts) < 2:
+            continue
+        
+        log_datetime = datetime.strptime(log_parts[0], '%Y-%m-%d')
+        
+        if start_date and log_datetime < datetime.strptime(start_date, '%Y-%m-%d'):
+            continue
+        if end_date and log_datetime > datetime.strptime(end_date, '%Y-%m-%d'):
+            continue
+        
+        if log_level != 'all':
+            if log_level.upper() not in log:
+                continue
+        
+        filtered_logs.append(log.strip())
+
+    return jsonify({'logs': filtered_logs})
 
 @bp.route('/admin/users/bulk_action', methods=['POST'])
 @login_required
