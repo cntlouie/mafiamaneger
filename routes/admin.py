@@ -148,3 +148,23 @@ def bulk_action():
         logger.error(f"Database error during bulk action: {str(e)}")
         return jsonify({'error': 'Database error', 'message': str(e)}), 500
 
+@bp.route('/admin/users/<int:user_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if request.method == 'POST':
+        user.username = request.form.get('username')
+        user.email = request.form.get('email')
+        new_password = request.form.get('password')
+        if new_password:
+            user.set_password(new_password)
+        try:
+            db.session.commit()
+            logger.info(f"User {user_id} edited by admin {current_user.id}")
+            return redirect(url_for('admin.list_users'))
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            logger.error(f"Database error while editing user {user_id}: {str(e)}")
+            return render_template('admin/edit_user.html', user=user, error="An error occurred while saving changes.")
+    return render_template('admin/edit_user.html', user=user)
