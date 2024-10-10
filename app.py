@@ -6,20 +6,26 @@ from extensions import db
 from flask_login import LoginManager, current_user
 import os
 import logging
+from logging.handlers import RotatingFileHandler
 import json
 
 def create_app():
     app = Flask(__name__)
 
     # Configure logging
-    logging.basicConfig(level=logging.INFO)
-    logger = app.logger
+    log_formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    log_file = os.path.join(app.root_path, 'app.log')
+    file_handler = RotatingFileHandler(log_file, maxBytes=10240, backupCount=10)
+    file_handler.setFormatter(log_formatter)
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(logging.INFO)
 
     database_url = os.environ.get("DATABASE_URL")
     if database_url:
-        logger.info("DATABASE_URL is set")
+        app.logger.info("DATABASE_URL is set")
     else:
-        logger.warning("DATABASE_URL is not set")
+        app.logger.warning("DATABASE_URL is not set")
 
     app.config["SQLALCHEMY_DATABASE_URI"] = database_url
     app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
@@ -57,22 +63,22 @@ def create_app():
     # Routes
     @app.route('/')
     def index():
-        logger.info(f"Received request for index page from {request.remote_addr}")
+        app.logger.info(f"Received request for index page from {request.remote_addr}")
         return render_template('index.html')
 
     @app.route('/register')
     def register():
-        logger.info(f"Received request for register page from {request.remote_addr}")
+        app.logger.info(f"Received request for register page from {request.remote_addr}")
         return render_template('register.html')
 
     @app.route('/login')
     def login():
-        logger.info(f"Received request for login page from {request.remote_addr}")
+        app.logger.info(f"Received request for login page from {request.remote_addr}")
         return render_template('login.html')
 
     @app.route('/dashboard')
     def dashboard():
-        logger.info(f"Received request for dashboard page from {request.remote_addr}")
+        app.logger.info(f"Received request for dashboard page from {request.remote_addr}")
         return render_template('dashboard.html')
 
     @app.route('/health')
@@ -82,7 +88,7 @@ def create_app():
             db.session.execute('SELECT 1')
             return jsonify({'status': 'healthy', 'database': 'connected'}), 200
         except Exception as e:
-            logger.error(f"Health check failed: {str(e)}")
+            app.logger.error(f"Health check failed: {str(e)}")
             return jsonify({'status': 'unhealthy', 'database': 'disconnected', 'error': str(e)}), 500
 
     @app.errorhandler(HTTPException)
@@ -100,7 +106,7 @@ def create_app():
     @app.errorhandler(500)
     def internal_error(error):
         db.session.rollback()
-        logger.error(f"Internal server error: {str(error)}")
+        app.logger.error(f"Internal server error: {str(error)}")
         return jsonify({'error': 'Internal server error'}), 500
 
     @app.route('/promote_first_user_to_admin')
@@ -110,17 +116,17 @@ def create_app():
             if first_user:
                 first_user.is_admin = True
                 db.session.commit()
-                logger.info(f'User {first_user.username} promoted to admin')
+                app.logger.info(f'User {first_user.username} promoted to admin')
                 return jsonify({'message': f'User {first_user.username} promoted to admin'}), 200
             else:
-                logger.warning('No users found in the database')
+                app.logger.warning('No users found in the database')
                 return jsonify({'message': 'No users found'}), 404
         except SQLAlchemyError as e:
             db.session.rollback()
-            logger.error(f'Database error while promoting user to admin: {str(e)}')
+            app.logger.error(f'Database error while promoting user to admin: {str(e)}')
             return jsonify({'error': 'Database error', 'message': str(e)}), 500
         except Exception as e:
-            logger.error(f'Unexpected error while promoting user to admin: {str(e)}')
+            app.logger.error(f'Unexpected error while promoting user to admin: {str(e)}')
             return jsonify({'error': 'Unexpected error', 'message': str(e)}), 500
 
     def ensure_admin_exists():
@@ -131,19 +137,19 @@ def create_app():
                 if first_user:
                     first_user.is_admin = True
                     db.session.commit()
-                    logger.info(f"Promoted user {first_user.username} to admin")
+                    app.logger.info(f"Promoted user {first_user.username} to admin")
                 else:
-                    logger.warning("No users found in the database")
+                    app.logger.warning("No users found in the database")
         except SQLAlchemyError as e:
             db.session.rollback()
-            logger.error(f'Database error while ensuring admin exists: {str(e)}')
+            app.logger.error(f'Database error while ensuring admin exists: {str(e)}')
         except Exception as e:
-            logger.error(f'Unexpected error while ensuring admin exists: {str(e)}')
+            app.logger.error(f'Unexpected error while ensuring admin exists: {str(e)}')
 
     with app.app_context():
         db.create_all()
         ensure_admin_exists()
-        logger.info("Database tables created and admin user ensured")
+        app.logger.info("Database tables created and admin user ensured")
 
     return app
 

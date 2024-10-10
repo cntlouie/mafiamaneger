@@ -129,7 +129,7 @@ def fetch_logs():
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
 
-    log_file_path = 'app.log'  # Update this with the actual log file path
+    log_file_path = os.path.join(current_app.root_path, 'app.log')
     
     if not os.path.exists(log_file_path):
         return jsonify({'logs': ['No log file found.']})
@@ -143,7 +143,10 @@ def fetch_logs():
         if len(log_parts) < 2:
             continue
         
-        log_datetime = datetime.strptime(log_parts[0], '%Y-%m-%d')
+        try:
+            log_datetime = datetime.strptime(log_parts[0], '%Y-%m-%d')
+        except ValueError:
+            continue
         
         if start_date and log_datetime < datetime.strptime(start_date, '%Y-%m-%d'):
             continue
