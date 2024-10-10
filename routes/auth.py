@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, redirect, url_for, current_app
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
 from models import User
-from app import db
+from flask_sqlalchemy import SQLAlchemy
 import logging
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -26,6 +26,7 @@ def register():
     if not username or not email or not password:
         return jsonify({'error': 'All fields are required'}), 400
 
+    db = SQLAlchemy()
     if User.query.filter_by(username=username).first():
         return jsonify({'error': 'Username already exists'}), 400
     if User.query.filter_by(email=email).first():
@@ -58,6 +59,7 @@ def login():
         if not username or not password:
             return jsonify({'error': 'Username and password are required'}), 400
 
+        db = SQLAlchemy()
         user = User.query.filter_by(username=username).first()
         logger.info(f"Login attempt for user: {username}")
 
