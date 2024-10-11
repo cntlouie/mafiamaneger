@@ -7,31 +7,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const formData = new FormData(form);
         const featureAccessData = {};
 
-        for (let [key, value] of formData.entries()) {
-            if (key.startsWith('feature_access')) {
-                const [_, userId, feature] = key.match(/feature_access\[(\d+)\]\[(.+)\]/);
-                if (!featureAccessData[userId]) {
-                    featureAccessData[userId] = {};
-                }
-                featureAccessData[userId][feature] = value === 'on';
-            }
-        }
-
-        // Add all features for each user, including unchecked ones
+        // Get all users and features
         const users = document.querySelectorAll('tr[data-user-id]');
         const features = Array.from(document.querySelectorAll('th')).slice(1).map(th => th.textContent.trim().toLowerCase().replace(' ', '_'));
 
+        // Initialize featureAccessData for all users and features
         users.forEach(userRow => {
             const userId = userRow.dataset.userId;
-            if (!featureAccessData[userId]) {
-                featureAccessData[userId] = {};
-            }
+            featureAccessData[userId] = {};
             features.forEach(feature => {
-                if (!(feature in featureAccessData[userId])) {
-                    featureAccessData[userId][feature] = false;
-                }
+                featureAccessData[userId][feature] = false;
             });
         });
+
+        // Update featureAccessData with checked boxes
+        for (let [key, value] of formData.entries()) {
+            if (key.startsWith('feature_access')) {
+                const [_, userId, feature] = key.match(/feature_access\[(\d+)\]\[(.+)\]/);
+                featureAccessData[userId][feature] = true;
+            }
+        }
 
         console.log('Sending feature access data:', featureAccessData);
 
