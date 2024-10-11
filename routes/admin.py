@@ -21,7 +21,7 @@ def admin_required(f):
 def admin_dashboard():
     total_users = User.query.count()
     total_admins = User.query.filter_by(is_admin=True).count()
-    new_users_last_week = User.query.filter(User.created_at >= (db.func.now() - db.func.interval('7 days'))).count()
+    new_users_last_week = User.query.filter(User.created_at >= (db.func.now() - db.text("interval '7 days'"))).count()
     users_with_advanced_stats = FeatureAccess.query.filter_by(feature='advanced_stats', enabled=True).count()
     users_with_faction_management = FeatureAccess.query.filter_by(feature='faction_management', enabled=True).count()
     users_with_leaderboard = FeatureAccess.query.filter_by(feature='leaderboard', enabled=True).count()
