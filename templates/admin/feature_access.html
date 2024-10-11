@@ -23,6 +23,9 @@
                                {% if user.feature_access|selectattr("feature", "equalto", feature)|first %}
                                checked
                                {% endif %}
+                               {% if feature == 'faction_creation' and not current_user.is_admin %}
+                               disabled
+                               {% endif %}
                                onchange="updateFeatureAccess({{ user.id }}, '{{ feature }}', this.checked)">
                     </td>
                     {% endfor %}
@@ -46,10 +49,14 @@ function updateFeatureAccess(userId, feature, enabled) {
     .then(data => {
         if (data.error) {
             alert(data.error);
+            // Revert the checkbox state if there's an error
+            event.target.checked = !enabled;
         }
     })
     .catch(error => {
         console.error('Error:', error);
+        // Revert the checkbox state if there's an error
+        event.target.checked = !enabled;
     });
 }
 </script>

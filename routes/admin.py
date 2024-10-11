@@ -119,6 +119,11 @@ def update_feature_access():
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
+    # Check if the feature is 'faction_creation' and ensure only admins can grant this permission
+    if feature == 'faction_creation' and not current_user.is_admin:
+        logger.warning(f"Non-admin user {current_user.id} attempted to grant faction creation permission")
+        return jsonify({'error': 'Only admins can grant faction creation permission'}), 403
+
     feature_access = FeatureAccess.query.filter_by(user_id=user.id, feature=feature).first()
     if feature_access:
         feature_access.enabled = enabled
@@ -127,5 +132,75 @@ def update_feature_access():
         db.session.add(feature_access)
 
     db.session.commit()
-    logger.info(f"Feature access updated for user {user.id}: {feature} set to {enabled}")
+    logger.info(f"Feature access updated for user {user.id}: {feature} set to {enabled} by admin {current_user.id}")
+    return jsonify({'success': True}), 200
+
+@bp.route('/admin/users')
+@login_required
+@admin_required
+def list_users():
+    page = request.args.get('page', 1, type=int)
+    search_query = request.args.get('search', '')
+    
+    users_query = User.query
+    if search_query:
+        users_query = users_query.filter(User.username.ilike(f'%{search_query}%'))
+    
+    users = users_query.paginate(page=page, per_page=20, error_out=False)
+    total_users = User.query.count()
+    total_admins = User.query.filter_by(is_admin=True).count()
+    
+    return render_template('admin/users.html', users=users, search_query=search_query, total_users=total_users, total_admins=total_admins)
+
+@bp.route('/admin/users/<int:user_id>/toggle_admin', methods=['POST'])
+@login_required
+@admin_required
+def toggle_admin(user_id):
+    user = User.query.get_or_404(user_id)
+    if user == current_user:
+        return jsonify({'error': 'You cannot change your own admin status'}), 400
+    
+    user.is_admin = not user.is_admin
+    db.session.commit()
+    logger.info(f"Admin status toggled for user {user.id} by admin {current_user.id}")
+    return jsonify({'success': True, 'is_admin': user.is_admin}), 200
+
+@bp.route('/admin/users/<int:user_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if user == current_user:
+        return jsonify({'error': 'You cannot delete your own account'}), 400
+    
+    db.session.delete(user)
+    db.session.commit()
+    logger.info(f"User {user.id} deleted by admin {current_user.id}")
+    return jsonify({'success': True}), 200
+
+@bp.route('/admin/users/bulk_action', methods=['POST'])
+@login_required
+@admin_required
+def bulk_action():
+    action = request.form.get('action')
+    user_ids = request.form.getlist('user_ids[]')
+    
+    if not action or not user_ids:
+        return jsonify({'error': 'Invalid request'}), 400
+    
+    users = User.query.filter(User.id.in_(user_ids)).all()
+    
+    if action == 'delete':
+        for user in users:
+            if user != current_user:
+                db.session.delete(user)
+        db.session.commit()
+        logger.info(f"Bulk delete action performed by admin {current_user.id}")
+    elif action == 'toggle_admin':
+        for user in users:
+            if user != current_user:
+                user.is_admin = not user.is_admin
+        db.session.commit()
+        logger.info(f"Bulk toggle admin action performed by admin {current_user.id}")
+    
     return jsonify({'success': True}), 200
