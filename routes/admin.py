@@ -19,7 +19,22 @@ def admin_required(f):
 @login_required
 @admin_required
 def admin_dashboard():
-    # ... (existing code)
+    total_users = User.query.count()
+    total_admins = User.query.filter_by(is_admin=True).count()
+    new_users_last_week = User.query.filter(User.created_at >= (db.func.now() - db.func.interval('7 days'))).count()
+    users_with_advanced_stats = FeatureAccess.query.filter_by(feature='advanced_stats', enabled=True).count()
+    users_with_faction_management = FeatureAccess.query.filter_by(feature='faction_management', enabled=True).count()
+    users_with_leaderboard = FeatureAccess.query.filter_by(feature='leaderboard', enabled=True).count()
+    users_with_faction_creation = FeatureAccess.query.filter_by(feature='faction_creation', enabled=True).count()
+
+    return render_template('admin/dashboard.html',
+                           total_users=total_users,
+                           total_admins=total_admins,
+                           new_users_last_week=new_users_last_week,
+                           users_with_advanced_stats=users_with_advanced_stats,
+                           users_with_faction_management=users_with_faction_management,
+                           users_with_leaderboard=users_with_leaderboard,
+                           users_with_faction_creation=users_with_faction_creation)
 
 @bp.route('/admin/feature_access', methods=['GET'])
 @login_required
@@ -74,5 +89,3 @@ def update_feature_access():
         db.session.rollback()
         logger.error(f"Error updating feature access: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
-
-# ... (rest of the existing code)

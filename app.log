@@ -2,3 +2,27 @@
 2024-10-11 20:20:35,295 - INFO - Received request for index page from 172.31.196.7
 2024-10-11 20:20:47,351 - INFO - Received request for index page from 172.31.196.7
 2024-10-11 20:24:56,042 - INFO - Received request for index page from 172.31.196.7
+2024-10-11 20:25:09,451 - INFO - Received request for index page from 172.31.196.7
+2024-10-11 20:26:55,227 - INFO - DATABASE_URL is set
+2024-10-11 20:26:55,236 - INFO - DATABASE_URL is set
+2024-10-11 20:26:55,254 - INFO - DATABASE_URL is set
+2024-10-11 20:26:55,256 - INFO - DATABASE_URL is set
+2024-10-11 20:26:55,325 - INFO - DATABASE_URL is set
+2024-10-11 20:26:55,332 - INFO - DATABASE_URL is set
+2024-10-11 20:26:55,358 - INFO - DATABASE_URL is set
+2024-10-11 20:26:55,360 - INFO - DATABASE_URL is set
+2024-10-11 20:26:55,377 - INFO - DATABASE_URL is set
+2024-10-11 20:27:11,022 - INFO - DATABASE_URL is set
+2024-10-11 20:27:11,041 - INFO - DATABASE_URL is set
+2024-10-11 20:27:11,120 - INFO - DATABASE_URL is set
+2024-10-11 20:27:11,145 - INFO - DATABASE_URL is set
+2024-10-11 20:27:11,147 - INFO - DATABASE_URL is set
+2024-10-11 20:27:11,242 - INFO - DATABASE_URL is set
+2024-10-11 20:27:11,316 - INFO - DATABASE_URL is set
+2024-10-11 20:27:11,337 - INFO - DATABASE_URL is set
+2024-10-11 20:27:11,419 - INFO - DATABASE_URL is set
+2024-10-11 20:28:30,004 - INFO - DATABASE_URL is set
+2024-10-11 20:28:30,600 - INFO - Database tables created and admin user ensured
+2024-10-11 20:28:37,024 - INFO - Received request for index page from 172.31.196.67
+2024-10-11 20:28:43,897 - INFO - Received request for index page from 172.31.196.67
+2024-10-11 20:28:47,873 - INFO - Received request for index page from 172.31.196.67
