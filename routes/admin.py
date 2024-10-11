@@ -125,41 +125,46 @@ def view_logs():
 @login_required
 @admin_required
 def fetch_logs():
-    log_level = request.args.get('level', 'all')
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
+    try:
+        log_level = request.args.get('level', 'all')
+        start_date = request.args.get('start_date')
+        end_date = request.args.get('end_date')
 
-    log_file_path = os.path.join(current_app.root_path, 'app.log')
-    
-    if not os.path.exists(log_file_path):
-        return jsonify({'logs': ['No log file found.']})
+        log_file_path = os.path.join(current_app.root_path, 'app.log')
+        
+        if not os.path.exists(log_file_path):
+            return jsonify({'logs': ['No log file found.']}), 404
 
-    with open(log_file_path, 'r') as log_file:
-        logs = log_file.readlines()
+        with open(log_file_path, 'r') as log_file:
+            logs = log_file.readlines()
 
-    filtered_logs = []
-    for log in logs:
-        log_parts = log.split()
-        if len(log_parts) < 2:
-            continue
-        
-        try:
-            log_datetime = datetime.strptime(log_parts[0], '%Y-%m-%d')
-        except ValueError:
-            continue
-        
-        if start_date and log_datetime < datetime.strptime(start_date, '%Y-%m-%d'):
-            continue
-        if end_date and log_datetime > datetime.strptime(end_date, '%Y-%m-%d'):
-            continue
-        
-        if log_level != 'all':
-            if log_level.upper() not in log:
+        filtered_logs = []
+        for log in logs:
+            log_parts = log.split(' ', 2)
+            if len(log_parts) < 3:
                 continue
-        
-        filtered_logs.append(log.strip())
+            
+            try:
+                log_datetime = datetime.strptime(f"{log_parts[0]} {log_parts[1]}", '%Y-%m-%d %H:%M:%S,%f')
+            except ValueError:
+                continue
+            
+            if start_date and log_datetime < datetime.strptime(start_date, '%Y-%m-%d'):
+                continue
+            if end_date and log_datetime > datetime.strptime(end_date, '%Y-%m-%d'):
+                continue
+            
+            if log_level != 'all':
+                if log_level.upper() not in log_parts[2]:
+                    continue
+            
+            filtered_logs.append(log.strip())
 
-    return jsonify({'logs': filtered_logs})
+        logger.info(f"Logs fetched by admin {current_user.id}")
+        return jsonify({'logs': filtered_logs}), 200
+    except Exception as e:
+        logger.error(f"Error fetching logs: {str(e)}")
+        return jsonify({'error': 'An error occurred while fetching logs', 'details': str(e)}), 500
 
 @bp.route('/admin/users/bulk_action', methods=['POST'])
 @login_required
