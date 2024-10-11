@@ -1,3 +1,34 @@
+from flask import Blueprint, render_template, request, jsonify, abort, current_app, redirect, url_for
+from flask_login import login_required, current_user
+from models import User, FeatureAccess, db
+from functools import wraps
+import logging
+
+bp = Blueprint('admin', __name__)
+logger = logging.getLogger(__name__)
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_admin:
+            return jsonify({'error': 'Admin access required'}), 403
+        return f(*args, **kwargs)
+    return decorated_function
+
+@bp.route('/admin/dashboard')
+@login_required
+@admin_required
+def admin_dashboard():
+    # ... (existing code)
+
+@bp.route('/admin/feature_access', methods=['GET'])
+@login_required
+@admin_required
+def manage_feature_access():
+    users = User.query.all()
+    features = ['faction_creation', 'advanced_stats', 'leaderboard', 'faction_management']
+    return render_template('admin/feature_access.html', users=users, features=features)
+
 @bp.route('/admin/feature_access/update', methods=['POST'])
 @login_required
 @admin_required
@@ -25,11 +56,15 @@ def update_feature_access():
 
                 feature_access = FeatureAccess.query.filter_by(user_id=user.id, feature=feature).first()
                 if feature_access:
-                    logger.info(f"Updating existing feature access: {feature} -> {enabled}")
-                    feature_access.enabled = enabled
-                else:
-                    logger.info(f"Creating new feature access: {feature} -> {enabled}")
-                    new_feature_access = FeatureAccess(user_id=user.id, feature=feature, enabled=enabled)
+                    if enabled:
+                        logger.info(f"Updating existing feature access: {feature} -> enabled")
+                        feature_access.enabled = True
+                    else:
+                        logger.info(f"Revoking feature access: {feature}")
+                        db.session.delete(feature_access)
+                elif enabled:
+                    logger.info(f"Creating new feature access: {feature} -> enabled")
+                    new_feature_access = FeatureAccess(user_id=user.id, feature=feature, enabled=True)
                     db.session.add(new_feature_access)
 
         db.session.commit()
@@ -39,3 +74,5 @@ def update_feature_access():
         db.session.rollback()
         logger.error(f"Error updating feature access: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+# ... (rest of the existing code)

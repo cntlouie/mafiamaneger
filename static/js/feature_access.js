@@ -17,6 +17,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // Add all features for each user, including unchecked ones
+        const users = document.querySelectorAll('tr[data-user-id]');
+        const features = Array.from(document.querySelectorAll('th')).slice(1).map(th => th.textContent.trim().toLowerCase().replace(' ', '_'));
+
+        users.forEach(userRow => {
+            const userId = userRow.dataset.userId;
+            if (!featureAccessData[userId]) {
+                featureAccessData[userId] = {};
+            }
+            features.forEach(feature => {
+                if (!(feature in featureAccessData[userId])) {
+                    featureAccessData[userId][feature] = false;
+                }
+            });
+        });
+
+        console.log('Sending feature access data:', featureAccessData);
+
         fetch(form.action, {
             method: 'POST',
             headers: {
