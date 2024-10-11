@@ -1,4 +1,4 @@
-2024-10-11 19:37:50,302 - ERROR - Exception on /dashboard [GET]
+2024-10-11 19:42:27,115 - ERROR - Exception on /admin/users [GET]
 Traceback (most recent call last):
   File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,9 +12,15 @@ Traceback (most recent call last):
   File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/app.py", line 82, in dashboard
-    return render_template('dashboard.html')
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/routes/admin.py", line 22, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/routes/admin.py", line 153, in list_users
+    return render_template('admin/users.html', users=users, search_query=search_query, total_users=total_users, total_admins=total_admins)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
     return _render(app, template, context)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -25,20 +31,79 @@ Traceback (most recent call last):
     self.environment.handle_exception()
   File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 939, in handle_exception
     raise rewrite_traceback_stack(source=source)
-  File "/home/runner/MafiaManager/templates/dashboard.html", line 1, in top-level template code
+  File "/home/runner/MafiaManager/templates/admin/users.html", line 1, in top-level template code
     {% extends "base.html" %}
   File "/home/runner/MafiaManager/templates/base.html", line 29, in top-level template code
     {% block content %}{% endblock %}
     ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/templates/dashboard.html", line 19, in block 'content'
-    {% if current_user.has_feature_access('faction_creation') %}
+  File "/home/runner/MafiaManager/templates/admin/users.html", line 48, in block 'content'
+    <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-blue mr-2">Edit</a>
     ^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/utils.py", line 83, in from_obj
-    if hasattr(obj, "jinja_pass_arg"):
-       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-jinja2.exceptions.UndefinedError: 'flask_login.mixins.AnonymousUserMixin object' has no attribute 'has_feature_access'
-2024-10-11 19:37:50,305 - ERROR - Internal server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
-2024-10-11 19:40:24,454 - INFO - DATABASE_URL is set
-2024-10-11 19:40:25,047 - INFO - Database tables created and admin user ensured
-2024-10-11 19:40:25,459 - INFO - Received request for index page from 172.31.196.7
-2024-10-11 19:40:38,401 - INFO - Received request for index page from 172.31.196.7
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'admin.edit_user' with values ['user_id']. Did you mean 'admin.list_users' instead?
+2024-10-11 19:42:27,139 - ERROR - Internal server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2024-10-11 19:42:58,785 - INFO - Received request for dashboard page from 172.31.196.7
+2024-10-11 19:43:48,315 - INFO - Received request for dashboard page from 172.31.196.7
+2024-10-11 19:44:08,792 - INFO - User 7 created faction 2
+2024-10-11 19:46:09,719 - ERROR - Exception on /admin/users [GET]
+Traceback (most recent call last):
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/routes/admin.py", line 22, in decorated_function
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/routes/admin.py", line 153, in list_users
+    return render_template('admin/users.html', users=users, search_query=search_query, total_users=total_users, total_admins=total_admins)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/runner/MafiaManager/templates/admin/users.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/home/runner/MafiaManager/templates/base.html", line 29, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/templates/admin/users.html", line 48, in block 'content'
+    <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" class="btn btn-blue mr-2">Edit</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'admin.edit_user' with values ['user_id']. Did you mean 'admin.list_users' instead?
+2024-10-11 19:46:09,769 - ERROR - Internal server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2024-10-11 19:49:41,547 - INFO - DATABASE_URL is set
+2024-10-11 19:49:42,281 - INFO - Database tables created and admin user ensured
+2024-10-11 19:49:42,820 - INFO - Received request for index page from 172.31.196.7
+2024-10-11 19:49:43,240 - INFO - Received request for index page from 172.31.196.7

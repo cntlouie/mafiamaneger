@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, abort, current_app
+from flask import Blueprint, render_template, request, jsonify, abort, current_app, redirect, url_for
 from flask_login import login_required, current_user
 from models import User, FeatureAccess, db
 from functools import wraps
@@ -35,6 +35,7 @@ def admin_dashboard():
     users_with_advanced_stats = FeatureAccess.query.filter_by(feature='advanced_stats', enabled=True).count()
     users_with_faction_management = FeatureAccess.query.filter_by(feature='faction_management', enabled=True).count()
     users_with_leaderboard = FeatureAccess.query.filter_by(feature='leaderboard', enabled=True).count()
+    users_with_faction_creation = FeatureAccess.query.filter_by(feature='faction_creation', enabled=True).count()
     
     logger.info(f"Admin dashboard accessed by user {current_user.id}")
     return render_template('admin/dashboard.html',
@@ -43,7 +44,8 @@ def admin_dashboard():
                            new_users_last_week=new_users_last_week,
                            users_with_advanced_stats=users_with_advanced_stats,
                            users_with_faction_management=users_with_faction_management,
-                           users_with_leaderboard=users_with_leaderboard)
+                           users_with_leaderboard=users_with_leaderboard,
+                           users_with_faction_creation=users_with_faction_creation)
 
 @bp.route('/admin/logs')
 @login_required
@@ -119,7 +121,6 @@ def update_feature_access():
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
-    # Check if the feature is 'faction_creation' and ensure only admins can grant this permission
     if feature == 'faction_creation' and not current_user.is_admin:
         logger.warning(f"Non-admin user {current_user.id} attempted to grant faction creation permission")
         return jsonify({'error': 'Only admins can grant faction creation permission'}), 403
@@ -204,3 +205,25 @@ def bulk_action():
         logger.info(f"Bulk toggle admin action performed by admin {current_user.id}")
     
     return jsonify({'success': True}), 200
+
+@bp.route('/admin/users/<int:user_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        if username and email:
+            user.username = username
+            user.email = email
+            if password:
+                user.set_password(password)
+            
+            db.session.commit()
+            logger.info(f"User {user.id} edited by admin {current_user.id}")
+            return redirect(url_for('admin.list_users'))
+        
+    return render_template('admin/edit_user.html', user=user)
