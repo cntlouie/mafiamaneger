@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, abort, current_app
 from flask_login import login_required, current_user
-from models import User, db
+from models import User, FeatureAccess, db
 from functools import wraps
 import logging
 from datetime import datetime, timedelta
@@ -96,4 +96,36 @@ def fetch_logs():
         logger.error(f"Error fetching logs: {str(e)}")
         return jsonify({'error': 'An error occurred while fetching logs', 'details': str(e)}), 500
 
-# Keep the existing code below this point
+@bp.route('/admin/feature_access', methods=['GET'])
+@login_required
+@admin_required
+def manage_feature_access():
+    users = User.query.all()
+    features = ['faction_creation', 'advanced_stats', 'leaderboard']
+    return render_template('admin/feature_access.html', users=users, features=features)
+
+@bp.route('/admin/feature_access/update', methods=['POST'])
+@login_required
+@admin_required
+def update_feature_access():
+    user_id = request.form.get('user_id')
+    feature = request.form.get('feature')
+    enabled = request.form.get('enabled') == 'true'
+
+    if not user_id or not feature:
+        return jsonify({'error': 'Invalid request'}), 400
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    feature_access = FeatureAccess.query.filter_by(user_id=user.id, feature=feature).first()
+    if feature_access:
+        feature_access.enabled = enabled
+    else:
+        feature_access = FeatureAccess(user_id=user.id, feature=feature, enabled=enabled)
+        db.session.add(feature_access)
+
+    db.session.commit()
+    logger.info(f"Feature access updated for user {user.id}: {feature} set to {enabled}")
+    return jsonify({'success': True}), 200
