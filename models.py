@@ -21,6 +21,12 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def has_feature_access(self, feature):
+        if self.is_authenticated:
+            feature_access = FeatureAccess.query.filter_by(user_id=self.id, feature=feature).first()
+            return feature_access is not None and feature_access.enabled
+        return False
+
 class Stats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

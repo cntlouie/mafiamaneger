@@ -1,54 +1,44 @@
-2024-10-11 19:02:05,774 - INFO - DATABASE_URL is set
-2024-10-11 19:02:07,653 - INFO - Database tables created and admin user ensured
-2024-10-11 19:02:08,682 - INFO - Received request for login page from 172.31.196.96
-2024-10-11 19:02:08,878 - INFO - Received request for login page from 172.31.196.96
-2024-10-11 19:02:20,955 - INFO - Received request for login page from 172.31.196.96
-2024-10-11 19:04:14,177 - INFO - Received request for register page from 172.31.196.96
-2024-10-11 19:04:33,910 - INFO - Received request for login page from 172.31.196.96
-2024-10-11 19:04:56,503 - INFO - DATABASE_URL is set
-2024-10-11 19:04:56,674 - INFO - DATABASE_URL is set
-2024-10-11 19:04:56,699 - INFO - DATABASE_URL is set
-2024-10-11 19:04:56,780 - INFO - DATABASE_URL is set
-2024-10-11 19:04:56,786 - INFO - DATABASE_URL is set
-2024-10-11 19:04:56,797 - INFO - DATABASE_URL is set
-2024-10-11 19:04:56,806 - INFO - DATABASE_URL is set
-2024-10-11 19:04:56,816 - INFO - DATABASE_URL is set
-2024-10-11 19:04:56,894 - INFO - DATABASE_URL is set
-2024-10-11 19:04:57,273 - INFO - Database tables created and admin user ensured
-2024-10-11 19:04:57,293 - INFO - Database tables created and admin user ensured
-2024-10-11 19:04:57,392 - INFO - Database tables created and admin user ensured
-2024-10-11 19:04:57,408 - INFO - Database tables created and admin user ensured
-2024-10-11 19:04:57,409 - INFO - Database tables created and admin user ensured
-2024-10-11 19:04:57,419 - INFO - Database tables created and admin user ensured
-2024-10-11 19:04:57,426 - INFO - Database tables created and admin user ensured
-2024-10-11 19:04:57,426 - INFO - Database tables created and admin user ensured
-2024-10-11 19:04:57,447 - INFO - Database tables created and admin user ensured
-2024-10-11 19:04:57,865 - INFO - Received request for login page from 172.31.196.96
-2024-10-11 19:08:52,869 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:09:07,233 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:09:07,630 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:09:08,080 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:09:25,786 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:09:38,527 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:09:50,231 - INFO - Received request for login page from 172.31.196.96
-2024-10-11 19:10:33,927 - INFO - Received request for register page from 172.31.196.96
-2024-10-11 19:11:22,797 - INFO - Received request for login page from 172.31.196.96
-2024-10-11 19:11:33,013 - INFO - Received request for dashboard page from 172.31.196.96
-2024-10-11 19:11:43,320 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:11:47,379 - INFO - Received request for login page from 172.31.196.96
-2024-10-11 19:14:19,403 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:14:23,522 - INFO - Received request for login page from 172.31.196.96
-2024-10-11 19:16:59,688 - INFO - Received request for dashboard page from 172.31.196.96
-2024-10-11 19:18:16,565 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:18:28,444 - INFO - Received request for login page from 172.31.196.96
-2024-10-11 19:18:41,826 - INFO - Received request for dashboard page from 172.31.196.96
-2024-10-11 19:22:45,348 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:22:58,676 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:26:12,294 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:26:26,969 - INFO - Received request for index page from 172.31.196.96
-2024-10-11 19:26:46,034 - INFO - Received request for login page from 172.31.196.96
-2024-10-11 19:26:58,877 - INFO - Received request for dashboard page from 172.31.196.96
-2024-10-11 19:27:19,713 - INFO - Received request for dashboard page from 172.31.196.96
-2024-10-11 19:28:11,498 - INFO - Received request for dashboard page from 172.31.196.96
-2024-10-11 19:28:27,773 - INFO - Received request for dashboard page from 172.31.196.96
-2024-10-11 19:31:11,081 - INFO - Received request for index page from 172.31.196.96
+2024-10-11 19:37:50,302 - ERROR - Exception on /dashboard [GET]
+Traceback (most recent call last):
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/app.py", line 82, in dashboard
+    return render_template('dashboard.html')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/runner/MafiaManager/templates/dashboard.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/home/runner/MafiaManager/templates/base.html", line 29, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/templates/dashboard.html", line 19, in block 'content'
+    {% if current_user.has_feature_access('faction_creation') %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/utils.py", line 83, in from_obj
+    if hasattr(obj, "jinja_pass_arg"):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+jinja2.exceptions.UndefinedError: 'flask_login.mixins.AnonymousUserMixin object' has no attribute 'has_feature_access'
+2024-10-11 19:37:50,305 - ERROR - Internal server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2024-10-11 19:40:24,454 - INFO - DATABASE_URL is set
+2024-10-11 19:40:25,047 - INFO - Database tables created and admin user ensured
+2024-10-11 19:40:25,459 - INFO - Received request for index page from 172.31.196.7
+2024-10-11 19:40:38,401 - INFO - Received request for index page from 172.31.196.7

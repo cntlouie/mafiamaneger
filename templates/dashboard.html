@@ -16,7 +16,7 @@
         <div id="faction-info">
             <!-- Faction info will be populated here by JavaScript -->
         </div>
-        {% if current_user.has_feature_access('faction_creation') %}
+        {% if current_user.is_authenticated and current_user.has_feature_access('faction_creation') %}
         <h3 class="text-xl font-bold mt-6 mb-2">Create Faction</h3>
         <form id="create-faction-form">
             <div class="mb-4">
@@ -26,6 +26,7 @@
             <button type="button" onclick="createFaction()" class="btn btn-blue">Create Faction</button>
         </form>
         {% endif %}
+        {% if current_user.is_authenticated %}
         <h3 class="text-xl font-bold mt-6 mb-2">Join Faction</h3>
         <form id="join-faction-form">
             <div class="mb-4">
@@ -38,6 +39,9 @@
         <ul id="faction-members" class="list-disc list-inside">
             <!-- Faction members will be populated here by JavaScript -->
         </ul>
+        {% else %}
+        <p class="mt-4">Please <a href="{{ url_for('login') }}" class="text-blue-500 hover:text-blue-700">log in</a> to manage factions.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
