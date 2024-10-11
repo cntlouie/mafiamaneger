@@ -113,3 +113,10 @@ werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'admin.
 2024-10-11 19:54:28,277 - INFO - Database tables created and admin user ensured
 2024-10-11 19:54:28,675 - INFO - Received request for index page from 172.31.196.7
 2024-10-11 19:54:29,452 - INFO - Received request for index page from 172.31.196.7
+2024-10-11 19:54:44,082 - INFO - Received request for index page from 172.31.196.7
+2024-10-11 19:56:38,297 - INFO - Received request for login page from 172.31.196.7
+2024-10-11 19:58:04,656 - INFO - Received request for dashboard page from 172.31.196.7
+2024-10-11 20:01:42,864 - INFO - DATABASE_URL is set
+2024-10-11 20:01:43,694 - INFO - Database tables created and admin user ensured
+2024-10-11 20:01:44,634 - INFO - Received request for index page from 172.31.196.7
+2024-10-11 20:01:45,035 - INFO - Received request for index page from 172.31.196.7

@@ -110,31 +110,33 @@ def manage_feature_access():
 @login_required
 @admin_required
 def update_feature_access():
-    user_id = request.form.get('user_id')
-    feature = request.form.get('feature')
-    enabled = request.form.get('enabled') == 'true'
+    try:
+        feature_access_data = request.json
 
-    if not user_id or not feature:
-        return jsonify({'error': 'Invalid request'}), 400
+        for user_id, features in feature_access_data.items():
+            user = User.query.get(int(user_id))
+            if not user:
+                continue
 
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({'error': 'User not found'}), 404
+            for feature, enabled in features.items():
+                if feature == 'faction_creation' and not current_user.is_admin:
+                    logger.warning(f"Non-admin user {current_user.id} attempted to grant faction creation permission")
+                    continue
 
-    if feature == 'faction_creation' and not current_user.is_admin:
-        logger.warning(f"Non-admin user {current_user.id} attempted to grant faction creation permission")
-        return jsonify({'error': 'Only admins can grant faction creation permission'}), 403
+                feature_access = FeatureAccess.query.filter_by(user_id=user.id, feature=feature).first()
+                if feature_access:
+                    feature_access.enabled = enabled
+                else:
+                    new_feature_access = FeatureAccess(user_id=user.id, feature=feature, enabled=enabled)
+                    db.session.add(new_feature_access)
 
-    feature_access = FeatureAccess.query.filter_by(user_id=user.id, feature=feature).first()
-    if feature_access:
-        feature_access.enabled = enabled
-    else:
-        feature_access = FeatureAccess(user_id=user.id, feature=feature, enabled=enabled)
-        db.session.add(feature_access)
-
-    db.session.commit()
-    logger.info(f"Feature access updated for user {user.id}: {feature} set to {enabled} by admin {current_user.id}")
-    return jsonify({'success': True}), 200
+        db.session.commit()
+        logger.info(f"Feature access bulk updated by admin {current_user.id}")
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Error updating feature access: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @bp.route('/admin/users')
 @login_required

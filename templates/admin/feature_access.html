@@ -4,60 +4,42 @@
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">Manage Feature Access</h1>
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-        <table class="w-full">
-            <thead>
-                <tr>
-                    <th class="px-4 py-2">Username</th>
-                    {% for feature in features %}
-                    <th class="px-4 py-2">{{ feature|replace('_', ' ')|title }}</th>
+        <form id="feature-access-form" method="POST" action="{{ url_for('admin.update_feature_access') }}">
+            <table class="w-full mb-4">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Username</th>
+                        {% for feature in features %}
+                        <th class="px-4 py-2">{{ feature|replace('_', ' ')|title }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td class="border px-4 py-2">{{ user.username }}</td>
+                        {% for feature in features %}
+                        <td class="border px-4 py-2">
+                            <input type="checkbox" 
+                                   name="feature_access[{{ user.id }}][{{ feature }}]"
+                                   {% if user.feature_access|selectattr("feature", "equalto", feature)|first %}
+                                   checked
+                                   {% endif %}
+                                   {% if feature == 'faction_creation' and not current_user.is_admin %}
+                                   disabled
+                                   {% endif %}>
+                        </td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td class="border px-4 py-2">{{ user.username }}</td>
-                    {% for feature in features %}
-                    <td class="border px-4 py-2">
-                        <input type="checkbox" 
-                               {% if user.feature_access|selectattr("feature", "equalto", feature)|first %}
-                               checked
-                               {% endif %}
-                               {% if feature == 'faction_creation' and not current_user.is_admin %}
-                               disabled
-                               {% endif %}
-                               onchange="updateFeatureAccess({{ user.id }}, '{{ feature }}', this.checked)">
-                    </td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-blue">Save Changes</button>
+        </form>
     </div>
 </div>
+{% endblock %}
 
-<script>
-function updateFeatureAccess(userId, feature, enabled) {
-    fetch('/admin/feature_access/update', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `user_id=${userId}&feature=${feature}&enabled=${enabled}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            alert(data.error);
-            // Revert the checkbox state if there's an error
-            event.target.checked = !enabled;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        // Revert the checkbox state if there's an error
-        event.target.checked = !enabled;
-    });
-}
-</script>
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/feature_access.js') }}"></script>
 {% endblock %}
