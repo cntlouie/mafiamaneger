@@ -1,4 +1,4 @@
-2024-10-11 20:30:14,579 - ERROR - Exception on /admin/dashboard [GET]
+2024-10-11 20:30:15,884 - ERROR - Exception on /admin/dashboard [GET]
 Traceback (most recent call last):
   File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
     self.dialect.do_execute(
@@ -83,4 +83,14 @@ FROM "user"
 WHERE "user".created_at >= now() - interval(%(interval_1)s)) AS anon_1]
 [parameters: {'interval_1': '7 days'}]
 (Background on this error at: https://sqlalche.me/e/20/f405)
-2024-10-11 20:30:14,601 - ERROR - Internal server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2024-10-11 20:30:15,905 - ERROR - Internal server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2024-10-11 20:30:24,206 - INFO - Received request for dashboard page from 172.31.196.67
+2024-10-11 20:32:02,699 - INFO - DATABASE_URL is set
+2024-10-11 20:32:03,268 - INFO - Database tables created and admin user ensured
+2024-10-11 20:32:03,762 - INFO - Received request for index page from 172.31.196.67
+2024-10-11 20:32:04,756 - INFO - Received request for index page from 172.31.196.67
+2024-10-11 20:32:16,155 - INFO - Received request for index page from 172.31.196.67
+2024-10-11 20:32:16,454 - INFO - Received request for index page from 172.31.196.67
+2024-10-11 20:32:52,615 - INFO - Received request for index page from 172.31.196.67
+2024-10-11 20:33:06,459 - INFO - Received request for index page from 172.31.196.67
+2024-10-11 20:33:21,480 - INFO - Received request for login page from 172.31.196.67

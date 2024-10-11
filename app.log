@@ -1,16 +1,4 @@
-2024-10-11 20:30:15,884 - ERROR - Exception on /admin/dashboard [GET]
-Traceback (most recent call last):
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
-    self.dialect.do_execute(
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
-    cursor.execute(statement, parameters)
-psycopg2.errors.SyntaxError: syntax error at or near "'7 days'"
-LINE 4: WHERE "user".created_at >= now() - interval('7 days')) AS an...
-                                                    ^
-
-
-The above exception was the direct cause of the following exception:
-
+2024-10-11 20:33:25,477 - ERROR - Exception on /admin/dashboard [GET]
 Traceback (most recent call last):
   File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1473, in wsgi_app
     response = self.full_dispatch_request()
@@ -30,65 +18,39 @@ Traceback (most recent call last):
   File "/home/runner/MafiaManager/routes/admin.py", line 15, in decorated_function
     return f(*args, **kwargs)
            ^^^^^^^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/routes/admin.py", line 24, in admin_dashboard
-    new_users_last_week = User.query.filter(User.created_at >= (db.func.now() - db.func.interval('7 days'))).count()
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 3113, in count
-    self._legacy_from_self(col).enable_eagerloads(False).scalar()
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2805, in scalar
-    ret = self.one()
-          ^^^^^^^^^^
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2778, in one
-    return self._iter().one()  # type: ignore
-           ^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2827, in _iter
-    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
-                                                  ^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2362, in execute
-    return self._execute_internal(
-           ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2247, in _execute_internal
-    result: Result[Any] = compile_state_cls.orm_execute_statement(
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/orm/context.py", line 305, in orm_execute_statement
-    result = conn.execute(
-             ^^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1418, in execute
-    return meth(
-           ^^^^^
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
-    return connection._execute_clauseelement(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
-    ret = self._execute_context(
-          ^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
-    return self._exec_single_context(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
-    self._handle_dbapi_exception(
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
-    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
-    self.dialect.do_execute(
-  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
-    cursor.execute(statement, parameters)
-sqlalchemy.exc.ProgrammingError: (psycopg2.errors.SyntaxError) syntax error at or near "'7 days'"
-LINE 4: WHERE "user".created_at >= now() - interval('7 days')) AS an...
-                                                    ^
-
-[SQL: SELECT count(*) AS count_1 
-FROM (SELECT "user".id AS user_id, "user".username AS user_username, "user".email AS user_email, "user".password_hash AS user_password_hash, "user".is_admin AS user_is_admin, "user".created_at AS user_created_at, "user".faction_id AS user_faction_id 
-FROM "user" 
-WHERE "user".created_at >= now() - interval(%(interval_1)s)) AS anon_1]
-[parameters: {'interval_1': '7 days'}]
-(Background on this error at: https://sqlalche.me/e/20/f405)
-2024-10-11 20:30:15,905 - ERROR - Internal server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
-2024-10-11 20:30:24,206 - INFO - Received request for dashboard page from 172.31.196.67
-2024-10-11 20:32:02,699 - INFO - DATABASE_URL is set
-2024-10-11 20:32:03,268 - INFO - Database tables created and admin user ensured
-2024-10-11 20:32:03,762 - INFO - Received request for index page from 172.31.196.67
-2024-10-11 20:32:04,756 - INFO - Received request for index page from 172.31.196.67
-2024-10-11 20:32:16,155 - INFO - Received request for index page from 172.31.196.67
-2024-10-11 20:32:16,454 - INFO - Received request for index page from 172.31.196.67
-2024-10-11 20:32:52,615 - INFO - Received request for index page from 172.31.196.67
+  File "/home/runner/MafiaManager/routes/admin.py", line 30, in admin_dashboard
+    return render_template('admin/dashboard.html',
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 1304, in render
+    self.environment.handle_exception()
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/jinja2/environment.py", line 939, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/home/runner/MafiaManager/templates/admin/dashboard.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/home/runner/MafiaManager/templates/base.html", line 29, in top-level template code
+    {% block content %}{% endblock %}
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/templates/admin/dashboard.html", line 12, in block 'content'
+    <a href="{{ url_for('admin.list_users') }}" class="btn btn-blue mt-4">Manage Users</a>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/werkzeug/routing/map.py", line 924, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'admin.list_users'. Did you mean 'admin.admin_dashboard' instead?
+2024-10-11 20:33:25,509 - ERROR - Internal server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+2024-10-11 20:34:03,748 - INFO - Received request for dashboard page from 172.31.196.67
+2024-10-11 20:36:08,214 - INFO - DATABASE_URL is set
+2024-10-11 20:36:08,780 - INFO - Database tables created and admin user ensured
+2024-10-11 20:36:09,258 - INFO - Received request for index page from 172.31.196.67
+2024-10-11 20:36:10,856 - INFO - Received request for index page from 172.31.196.67

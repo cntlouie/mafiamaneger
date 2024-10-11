@@ -36,6 +36,23 @@ def admin_dashboard():
                            users_with_leaderboard=users_with_leaderboard,
                            users_with_faction_creation=users_with_faction_creation)
 
+@bp.route('/admin/users')
+@login_required
+@admin_required
+def list_users():
+    page = request.args.get('page', 1, type=int)
+    search_query = request.args.get('search', '')
+    
+    query = User.query
+    if search_query:
+        query = query.filter(User.username.ilike(f'%{search_query}%'))
+    
+    users = query.paginate(page=page, per_page=10, error_out=False)
+    total_users = User.query.count()
+    total_admins = User.query.filter_by(is_admin=True).count()
+    
+    return render_template('admin/users.html', users=users, search_query=search_query, total_users=total_users, total_admins=total_admins)
+
 @bp.route('/admin/feature_access', methods=['GET'])
 @login_required
 @admin_required
@@ -89,3 +106,67 @@ def update_feature_access():
         db.session.rollback()
         logger.error(f"Error updating feature access: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+@bp.route('/admin/users/<int:user_id>/toggle_admin', methods=['POST'])
+@login_required
+@admin_required
+def toggle_admin(user_id):
+    user = User.query.get_or_404(user_id)
+    if user == current_user:
+        return jsonify({'error': 'You cannot change your own admin status'}), 400
+    
+    user.is_admin = not user.is_admin
+    db.session.commit()
+    return jsonify({'success': True, 'is_admin': user.is_admin})
+
+@bp.route('/admin/users/<int:user_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if user == current_user:
+        return jsonify({'error': 'You cannot delete your own account'}), 400
+    
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'success': True})
+
+@bp.route('/admin/bulk_action', methods=['POST'])
+@login_required
+@admin_required
+def bulk_action():
+    action = request.form.get('action')
+    user_ids = request.form.getlist('user_ids[]')
+    
+    if not action or not user_ids:
+        return jsonify({'error': 'Invalid request'}), 400
+    
+    if action == 'delete':
+        User.query.filter(User.id.in_(user_ids), User.id != current_user.id).delete(synchronize_session=False)
+    elif action == 'toggle_admin':
+        users = User.query.filter(User.id.in_(user_ids), User.id != current_user.id)
+        for user in users:
+            user.is_admin = not user.is_admin
+    
+    db.session.commit()
+    return redirect(url_for('admin.list_users'))
+
+@bp.route('/admin/logs')
+@login_required
+@admin_required
+def view_logs():
+    return render_template('admin/logs.html')
+
+@bp.route('/admin/fetch_logs')
+@login_required
+@admin_required
+def fetch_logs():
+    log_level = request.args.get('level', 'all')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    
+    # Implement log fetching logic here
+    # This is a placeholder, you'll need to implement the actual log fetching
+    logs = ["Log entry 1", "Log entry 2", "Log entry 3"]
+    
+    return jsonify({'logs': logs})

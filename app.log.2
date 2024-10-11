@@ -1,34 +1,4 @@
-2024-10-11 20:13:54,242 - INFO - Received request for login page from 172.31.196.7
-2024-10-11 20:20:35,295 - INFO - Received request for index page from 172.31.196.7
-2024-10-11 20:20:47,351 - INFO - Received request for index page from 172.31.196.7
-2024-10-11 20:24:56,042 - INFO - Received request for index page from 172.31.196.7
-2024-10-11 20:25:09,451 - INFO - Received request for index page from 172.31.196.7
-2024-10-11 20:26:55,227 - INFO - DATABASE_URL is set
-2024-10-11 20:26:55,236 - INFO - DATABASE_URL is set
-2024-10-11 20:26:55,254 - INFO - DATABASE_URL is set
-2024-10-11 20:26:55,256 - INFO - DATABASE_URL is set
-2024-10-11 20:26:55,325 - INFO - DATABASE_URL is set
-2024-10-11 20:26:55,332 - INFO - DATABASE_URL is set
-2024-10-11 20:26:55,358 - INFO - DATABASE_URL is set
-2024-10-11 20:26:55,360 - INFO - DATABASE_URL is set
-2024-10-11 20:26:55,377 - INFO - DATABASE_URL is set
-2024-10-11 20:27:11,022 - INFO - DATABASE_URL is set
-2024-10-11 20:27:11,041 - INFO - DATABASE_URL is set
-2024-10-11 20:27:11,120 - INFO - DATABASE_URL is set
-2024-10-11 20:27:11,145 - INFO - DATABASE_URL is set
-2024-10-11 20:27:11,147 - INFO - DATABASE_URL is set
-2024-10-11 20:27:11,242 - INFO - DATABASE_URL is set
-2024-10-11 20:27:11,316 - INFO - DATABASE_URL is set
-2024-10-11 20:27:11,337 - INFO - DATABASE_URL is set
-2024-10-11 20:27:11,419 - INFO - DATABASE_URL is set
-2024-10-11 20:28:30,004 - INFO - DATABASE_URL is set
-2024-10-11 20:28:30,600 - INFO - Database tables created and admin user ensured
-2024-10-11 20:28:37,024 - INFO - Received request for index page from 172.31.196.67
-2024-10-11 20:28:43,897 - INFO - Received request for index page from 172.31.196.67
-2024-10-11 20:28:47,873 - INFO - Received request for index page from 172.31.196.67
-2024-10-11 20:28:59,216 - INFO - Received request for index page from 172.31.196.67
-2024-10-11 20:29:26,826 - INFO - Received request for login page from 172.31.196.67
-2024-10-11 20:29:29,624 - ERROR - Exception on /admin/dashboard [GET]
+2024-10-11 20:30:14,579 - ERROR - Exception on /admin/dashboard [GET]
 Traceback (most recent call last):
   File "/home/runner/MafiaManager/.pythonlibs/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
     self.dialect.do_execute(
@@ -113,6 +83,4 @@ FROM "user"
 WHERE "user".created_at >= now() - interval(%(interval_1)s)) AS anon_1]
 [parameters: {'interval_1': '7 days'}]
 (Background on this error at: https://sqlalche.me/e/20/f405)
-2024-10-11 20:29:29,662 - ERROR - Internal server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
-2024-10-11 20:29:48,585 - INFO - Received request for login page from 172.31.196.67
-2024-10-11 20:29:53,337 - INFO - Received request for dashboard page from 172.31.196.67
+2024-10-11 20:30:14,601 - ERROR - Internal server error: 500 Internal Server Error: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
